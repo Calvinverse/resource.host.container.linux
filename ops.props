@@ -166,12 +166,17 @@
 
         <!-- The directory that contains the source files for the project -->
         <!-- <DirSrc>$(DirWorkspace)\src</DirSrc> -->
+        <DirSrcCookbooks>$(DirSrc)\cookbooks</DirSrcCookbooks>
+        <DirSrcPacker>$(DirSrc)\packer</DirSrcPacker>
 
         <!-- The directory that contains the template files for the project -->
         <!-- <DirTemplates>$(DirWorkspace)\templates</DirTemplates> -->
 
         <!-- The directory that contains all the test files for the project -->
         <!-- <DirTest>$(DirWorkspace)\tests</DirTest> -->
+
+        <!-- The directory that contains all the vendor cookbooks -->
+        <!-- <DirVendorCookbooks>$(DirWorkspace)\berks\cookbooks</DirVendorCookbooks> -->
     </PropertyGroup>
 
     <!--
@@ -229,6 +234,19 @@
             Include="$(DirWorkspace)\**\package.json"
             Exclude="$(DirBuild)\**\package.json;$(DirWorkspace)\**\bin\**\package.json;$(DirWorkspace)\**\obj\**\package.json;$(DirWorkspace)\**\bower_components\**\package.json;$(DirWorkspace)\**\node_modules\**\package.json" />
         -->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - CHEF ****
+    -->
+    <!--
+        The collection of directories that should be analyzed with Foodcritic and ChefSpec.
+    -->
+    <ItemGroup>
+        <ChefCookbooks Include="$(DirSrcCookbooks)\resource_container_host_linux">
+            <ChefSpecPattern>./*/spec/*_spec.rb</ChefSpecPattern>
+        </ChefCookbooks>
     </ItemGroup>
 
 
@@ -465,17 +483,46 @@
         -->
         <!-- <TemplateTokenGenerators>UNDEFINED</TemplateTokenGenerators> -->
     </PropertyGroup>
+    <PropertyGroup>
+        <LinuxImage Condition=" '$(LinuxImage)' == '' ">resource.container.host.linux-ubuntu1604</LinuxImage>
+    </PropertyGroup>
 
     <!--
         Additional items that should be available for the template replacement.
         The default template parameters, as indicated at the top of this file, are always available.
     -->
     <ItemGroup>
-        <!--
-        <TemplateTokens Include="">
-            <ReplacementValue></ReplacementValue>
+        <!-- General -->
+        <TemplateTokens Include="LocalAdministratorName">
+            <ReplacementValue>thebigkahuna</ReplacementValue>
         </TemplateTokens>
-        -->
+        <TemplateTokens Include="LocalAdministratorPassword">
+            <ReplacementValue>TheB1gK@huna</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens Include="LinuxImage">
+            <ReplacementValue>$(LinuxImage)</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens Include="ImageName">
+            <ReplacementValue>$(LinuxImage.Replace(' ', '-').Replace('.', '-').ToLower())</ReplacementValue>
+        </TemplateTokens>
+
+        <TemplateTokens Include="HostIpAddress">
+            <ReplacementValue>192.168.3.25</ReplacementValue>
+        </TemplateTokens>
+
+        <!-- For the Packer config -->
+        <TemplateTokens Include="DirTempJsonEscaped">
+            <ReplacementValue>$(DirBuildTemp.Replace('\', '/'))</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens Include="DirSrcCookbooksJsonEscaped">
+            <ReplacementValue>$(DirSrcCookbooks.Replace('\', '/'))</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens Include="DirPackagesCookbooksVendorJsonEscaped">
+            <ReplacementValue>$(DirPackagesCookbooksVendor.Replace('\', '/'))</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens Include="VmSwitch">
+            <ReplacementValue>External switch</ReplacementValue>
+        </TemplateTokens>
     </ItemGroup>
 
 

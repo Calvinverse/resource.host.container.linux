@@ -136,17 +136,10 @@
         Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
     -->
     <ItemGroup>
-        <!--
-        <BuildFilesToGenerate
-            Condition=" '$(DirBuildTemp)' != '' "
-            Include="$(DirBuildTemp)\MyFile.txt">
-            <Encoding>UTF-8</Encoding>
-            <Expression>(MyRegex)</Expression>
-            <ReplacementValue>MyAdditionalTemplateValue</ReplacementValue>
-            <Template>$(DirTemplates)\MyOtherTemplatefile.txt</Template>
-            <Token>MyAdditionalTemplateParameter</Token>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\ubuntu_1604\packer_variables.json">
+            <Template>$(DirSrcPacker)\ubuntu_1604\packer_variables.json</Template>
+            <Encoding></Encoding>
         </BuildFilesToGenerate>
-        -->
     </ItemGroup>
 
 
@@ -452,25 +445,8 @@
         The collection of files that should be analyzed with Rubocop
     -->
     <ItemGroup>
-        <!-->
-        <RubocopConfigurationFiles Include="">
+        <RubocopConfigurationFiles Include="$(DirSrcCookbooks)\rubocop.yml">
         </RubocopConfigurationFiles>
-        -->
-    </ItemGroup>
-
-
-    <!--
-        **** ANALYSE / UNIT TEST - CHEF ****
-    -->
-    <!--
-        The collection of directories that should be analyzed with Foodcritic and ChefSpec.
-    -->
-    <ItemGroup>
-        <!-->
-        <ChefCookbooksToAnalyze Include="">
-            <RSpecPattern>./*/spec/*_spec.rb</RSpecPattern>
-        </ChefCookbooksToAnalyze>
-        -->
     </ItemGroup>
 
 
@@ -740,6 +716,20 @@
         </BuildStepsToExecute>
         -->
 
+        <BuildStepsToExecute Include="$(BuildStepsPrepareRestoreBerkshelf)">
+            <Properties>
+            </Properties>
+            <Groups>
+                prepare;
+                prepare.restore;
+                prepare.restore.cookbooks;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </BuildStepsToExecute>
+
         <BuildStepsToExecute Include="$(BuildStepsPrepareCopyNuGet)">
             <Properties>
             </Properties>
@@ -794,6 +784,7 @@
             </PostSteps>
         </BuildStepsToExecute>
 
+        <!--
         <BuildStepsToExecute Include="$(BuildStepsPrepareFileHashes)">
             <Properties>
             </Properties>
@@ -806,6 +797,7 @@
             <PostSteps>
             </PostSteps>
         </BuildStepsToExecute>
+        -->
         <!--
         <BuildStepsToExecute Include="$(BuildStepsPrepareGenerateLicenses)">
             <Properties>
@@ -1096,6 +1088,26 @@
         </AvailableStepMetadata>
         -->
     </ItemGroup>
+
+
+
+
+    <!--
+        *************************************
+        *                                   *
+        *     SHARED TOOLS                  *
+        *                                   *
+        *************************************
+    -->
+
+    <!-- Overrides for the tools paths -->
+    <PropertyGroup>
+        <!--
+            The full path and version to the packer command line executable. If not defined the packages directory is searched.
+        -->
+        <ToolsExternalPackerPath>UNDEFINED</ToolsExternalPackerPath>
+        <ToolsExternalPackerVersion>1.1.0</ToolsExternalPackerVersion>
+    </PropertyGroup>
 
 
 
