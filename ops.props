@@ -517,8 +517,8 @@
         <TemplateTokens Include="DirSrcCookbooksJsonEscaped">
             <ReplacementValue>$(DirSrcCookbooks.Replace('\', '/'))</ReplacementValue>
         </TemplateTokens>
-        <TemplateTokens Include="DirPackagesCookbooksVendorJsonEscaped">
-            <ReplacementValue>$(DirPackagesCookbooksVendor.Replace('\', '/'))</ReplacementValue>
+        <TemplateTokens Include="DirVendorCookbooksJsonEscaped">
+            <ReplacementValue>$(DirVendorCookbooks.Replace('\', '/'))</ReplacementValue>
         </TemplateTokens>
         <TemplateTokens Include="VmSwitch">
             <ReplacementValue>External switch</ReplacementValue>

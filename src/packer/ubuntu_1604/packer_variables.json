@@ -9,7 +9,7 @@
     "admin_password": "${LocalAdministratorPassword}",
 
     "dir_cookbooks_src": "${DirSrcCookbooksJsonEscaped}",
-    "dir_cookbooks_vendors": "${DirPackagesCookbooksVendorJsonEscaped}",
+    "dir_cookbooks_vendors": "${DirVendorCookbooksJsonEscaped}",
     "dir_http_user": "",
     "dir_temp": "${DirTempJsonEscaped}",
     "dir_vm_import": "${DirTempJsonEscaped}/vm/base"
