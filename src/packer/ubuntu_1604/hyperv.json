@@ -37,7 +37,11 @@
     ],
     "provisioners": [
         {
-            "type": "chef-solo",
+            "expect_disconnect": false,
+            "inline": "echo '{{ user `admin_password` }}' | sudo -S -E apt-get install curl",
+            "type": "shell"
+        },
+        {
             "cookbook_paths": [
                 "{{ user `dir_cookbooks_src` }}",
                 "{{ user `dir_cookbooks_vendors` }}"
@@ -45,7 +49,8 @@
             "guest_os_type": "unix",
             "run_list": [
                 "resource_container_host_linux::default"
-            ]
+            ],
+            "type": "chef-solo"
         }
     ]
 }
