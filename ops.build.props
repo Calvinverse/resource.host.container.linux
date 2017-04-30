@@ -77,10 +77,11 @@
     <!--
         Files that should be copied, either from the file system or from a NuGet package.
     -->
-    <ItemGroup>
-        <!--
-        <FilesToCopy Include="$()">
-            <Destination>$(DirBuildTemp)\</Destination>
+    <ItemGroup Condition=" '$(ShouldLoadFilesToCopy)' == 'true' ">
+        <FilesToCopy
+            Exclude="$(DirSrcCookbooks)\**\metadata.rb"
+            Include="$(DirSrcCookbooks)\**\*.*">
+            <Destination>$(DirBuildTempCookbooks)</Destination>
         </FilesToCopy>
         -->
     </ItemGroup>
@@ -135,7 +136,11 @@
 
         Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadBuildFilesToGenerate)' == 'true' ">
+        <BuildFilesToGenerate Include="$(DirBuildTempCookbooks)\resource_container_host_linux\metadata.rb">
+            <Template>$(DirSrcCookbooks)\resource_container_host_linux\metadata.rb</Template>
+            <Encoding></Encoding>
+        </BuildFilesToGenerate>
         <BuildFilesToGenerate Include="$(DirBuildTemp)\ubuntu_1604\packer_variables.json">
             <Template>$(DirSrcPacker)\ubuntu_1604\packer_variables.json</Template>
             <Encoding></Encoding>

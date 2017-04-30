@@ -8,5 +8,5 @@ Documentation:
 AllCops:
   Exclude:
     - 'berks/**/*'
-    - 'build/temp/**/*'
     - 'packages/**/*'
+    - 'src/**/*'
