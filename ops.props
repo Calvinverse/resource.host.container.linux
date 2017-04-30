@@ -10,32 +10,51 @@
             * Copyrights
             * API documentation
         -->
-        <ProductName>My Product</ProductName>
+        <ProductName>Resource.Container.Host.Linux</ProductName>
 
         <!--
             The name of the product that can be used as part of a file path. This is for instance used for:
             * Deployment directory naming
         -->
-        <ProductNameInFilePath>MyProduct</ProductNameInFilePath>
+        <ProductNameInFilePath>Resource.Container.Host.Linux</ProductNameInFilePath>
 
         <!--
             The namespace in which all the code for the product is placed. This is for instance used for:
             * Finding the correct assemblies and namespaces for unit testing and coverage reporting
             * Generated code files that contain namespaces
         -->
-        <ProductNamespace>MyProduct</ProductNamespace>
+        <ProductNamespace>Resource.Container.Host.Linux</ProductNamespace>
 
         <!--
             The URL of the product website. This is for instance used for:
             * nuspec files
         -->
-        <ProductUrl>UNDEFINED</ProductUrl>
+        <ProductUrl>https://github.com/Calvinverse/resource.container.host.linux</ProductUrl>
 
         <!--
             The first year the product was available / created. This is for instance used for:
             * Copyrights
         -->
-        <ProductStartingYear>UNDEFINED</ProductStartingYear>
+        <ProductStartingYear>2017</ProductStartingYear>
+
+        <!--
+            The name of the company. This is for instance used for:
+            * Copyrights
+            * API documentation
+        -->
+        <CompanyName>Calvinverse</CompanyName>
+
+        <!--
+            The name of the company that can be used as a part of a file path. This is for instance used for:
+            * Installer file paths
+        -->
+        <CompanyNameInFilePath>calvinverse</CompanyNameInFilePath>
+
+        <!--
+            The URL of the company website. This is for instance used for:
+            * nuspec files
+        -->
+        <CompanyUrl>https://github.com/Calvinverse</CompanyUrl>
     </PropertyGroup>
 
     <!--
@@ -46,7 +65,7 @@
             The full URL to the GIT repository. Can include the '%GitHubToken%' environment variable for authenticated
             connection to the repository, e.g. https://%GitHubToken%:@github.com/MyUser/MyProject.git
         -->
-        <GitRemoteRepository>origin</GitRemoteRepository>
+        <GitRemoteRepository>https://github.com/Calvinverse/resource.container.host.linux</GitRemoteRepository>
     </PropertyGroup>
 
     <!--
@@ -155,6 +174,7 @@
 
         <!-- The directory that will contain all the temporary files needed during the build process -->
         <!-- <DirBuildTemp>$(DirBuild)\temp</DirBuildTemp> -->
+        <DirBuildTempCookbooks>$(DirBuildTemp)\cookbooks</DirBuildTempCookbooks>
         <DirBuildTempVm>$(DirBuildTemp)\vm</DirBuildTempVm>
         <DirBuildTempVmBase>$(DirBuildTempVm)\base</DirBuildTempVmBase>
 
@@ -210,7 +230,7 @@
     <!--
         **** PREPARE - NUGET RESTORE ****
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadNuGetPackageFiles)' == 'true' ">
         <!--
         <NuGetPackageFiles
             Condition=" '$(DirWorkspace)' != '' "
@@ -227,7 +247,7 @@
     <!--
         **** PREPARE - NPM RESTORE ****
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadNpmPackageFiles)' == 'true' ">
         <!--
         <NpmPackageFiles
             Condition=" '$(DirWorkspace)' != '' "
@@ -238,15 +258,24 @@
 
 
     <!--
+        **** PREPARE - BUNDLER RESTORE ****
+    -->
+    <ItemGroup Condition=" '$(ShouldLoadBundlerGemFiles)' == 'true' ">
+        <BundlerGemFiles
+            Condition=" '$(DirWorkspace)' != '' "
+            Include="$(DirSrcCookbooks)\**\Gemfile"
+            Exclude="$(DirBuild)\**\Gemfile;" />
+    </ItemGroup>
+
+
+    <!--
         **** PREPARE - CHEF ****
     -->
     <!--
-        The collection of directories that should be analyzed with Foodcritic and ChefSpec.
+        The collection of cookbooks for which the dependencies should be restored with Berkshelf
     -->
-    <ItemGroup>
-        <ChefCookbooks Include="$(DirSrcCookbooks)\resource_container_host_linux">
-            <ChefSpecPattern>./*/spec/*_spec.rb</ChefSpecPattern>
-        </ChefCookbooks>
+    <ItemGroup Condition=" '$(ShouldLoadChefCookbooksToRestore)' == 'true' ">
+        <ChefCookbooksToRestore Include="$(DirBuildTempCookbooks)\resource_container_host_linux" />
     </ItemGroup>
 
 
@@ -559,28 +588,9 @@
     <!-- Overrides for the tools paths -->
     <PropertyGroup>
         <!--
-            The full path and version of the Bower command line executable. If not defined the packages directory is searched.
+            The full path to the berkshelf application. If not defined the Gems bin directory is searched.
         -->
-        <!-- <ToolsExternalBowerPath>bower</ToolsExternalBowerPath>
-        <ToolsExternalBowerVersion>1.3.11</ToolsExternalBowerVersion> -->
-
-        <!--
-            The full path and version of the Node.js command line executable. If not defined the packages directory is searched.
-        -->
-        <!-- <ToolsExternalNodeJsPath>node</ToolsExternalNodeJsPath>
-        <ToolsExternalNodeJsVersion>4.2.3</ToolsExternalNodeJsVersion> -->
-
-        <!--
-            The full path and version of the NPM command line executable. If not defined the packages directory is searched.
-        -->
-        <!-- <ToolsExternalNpmPath>npm</ToolsExternalNpmPath>
-        <ToolsExternalNpmVersion>3.5.2</ToolsExternalNpmVersion> -->
-
-        <!--
-            The full path and version of the python command line executable. If not defined the packages directory is searched.
-        -->
-        <!-- <ToolsExternalPythonPath>UNDEFINED</ToolsExternalPythonPath>
-        <ToolsExternalPythonVersion>2.7.9</ToolsExternalPythonVersion> -->
+        <ToolsExternalBerkshelfPath>berks</ToolsExternalBerkshelfPath>
     </PropertyGroup>
 
 
