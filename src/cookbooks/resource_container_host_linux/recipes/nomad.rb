@@ -27,22 +27,22 @@ end
 include_recipe 'nomad::default'
 
 # Use consul-template to update the nomad configuration files
-consul_template 'nomad.json' do
-  backup true
-  command 'service name restart'
-  command_timeout '60s'
-  content <<-JSON
-  {
-    "template": {
-      "backup": true,
-      "command": "restart-service name",
-      "command_timeout": "60s",
-      "destination": "C:\\\\temp\\\\result",
-      "source": "C:\\\\Progam Files\\\\consul-template\\\\templates\\\\example.ctmpl"
-    }
-  }
-  JSON
-  destination default['nomad']['daemon_args']['config']
-  notifies :restart, 'consul_template_service[consul-template]', :delayed
-  perms '0440'
-end
+# consul_template 'nomad.json' do
+#   backup true
+#   command 'service name restart'
+#   command_timeout '60s'
+#   content <<-JSON
+#   {
+#     "template": {
+#       "backup": true,
+#       "command": "restart-service name",
+#       "command_timeout": "60s",
+#       "destination": "C:\\\\temp\\\\result",
+#       "source": "C:\\\\Progam Files\\\\consul-template\\\\templates\\\\example.ctmpl"
+#     }
+#   }
+#   JSON
+#   destination default['nomad']['daemon_args']['config']
+#   notifies :restart, 'consul_template_service[consul-template]', :delayed
+#   perms '0440'
+# end

@@ -22,8 +22,5 @@ include_recipe 'consul::default'
 # Delay start?
 
 # Install Consul template
-node.default['consul_template']['service_name'] = 'consul-template'
-node.default['consul_template']['version'] = '0.18.2'
-include_recipe 'consul_template::default'
 
 # Provisioning

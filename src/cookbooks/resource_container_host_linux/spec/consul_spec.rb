@@ -5,15 +5,11 @@ describe 'resource_container_host_linux::consul' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
 
     it 'has the correct platform_version' do
-      expect(chef_run.node['platform_version']).to eq("16.04")
+      expect(chef_run.node['platform_version']).to eq('16.04')
     end
 
     it 'imports the consul recipe' do
       expect(chef_run).to include_recipe('consul::default')
-    end
-
-    it 'imports the consul-template recipe' do
-      expect(chef_run).to include_recipe('consul-template::default')
     end
   end
 end
