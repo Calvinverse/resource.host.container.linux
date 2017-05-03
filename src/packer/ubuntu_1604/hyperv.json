@@ -37,8 +37,17 @@
     ],
     "provisioners": [
         {
+            "execute_command": "echo '{{ user `admin_password` }}' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+            "inline": [
+                "echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers"
+            ],
+            "type": "shell"
+        },
+        {
             "expect_disconnect": false,
-            "inline": "echo '{{ user `admin_password` }}' | sudo -S -E apt-get install curl",
+            "inline": [
+                "sudo -S -E apt-get install curl"
+            ],
             "type": "shell"
         },
         {
