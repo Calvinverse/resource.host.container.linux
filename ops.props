@@ -544,7 +544,7 @@
             <ReplacementValue>$(DirBuildTemp.Replace('\', '/'))</ReplacementValue>
         </TemplateTokens>
         <TemplateTokens Include="DirSrcCookbooksJsonEscaped">
-            <ReplacementValue>$(DirSrcCookbooks.Replace('\', '/'))</ReplacementValue>
+            <ReplacementValue>$(DirBuildTempCookbooks.Replace('\', '/'))</ReplacementValue>
         </TemplateTokens>
         <TemplateTokens Include="DirVendorCookbooksJsonEscaped">
             <ReplacementValue>$(DirVendorCookbooks.Replace('\', '/'))</ReplacementValue>
