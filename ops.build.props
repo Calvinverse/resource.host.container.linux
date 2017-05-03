@@ -1048,7 +1048,6 @@
             <PostSteps>
             </PostSteps>
         </BuildStepsToExecute>
-        <!--
         <BuildStepsToExecute Include="$(BuildStepsPackPacker)">
             <Properties>
                 Configuration=$(ProductionConfiguration);
@@ -1063,7 +1062,6 @@
             <PostSteps>
             </PostSteps>
         </BuildStepsToExecute>
-        -->
 
         <!--
         <BuildStepsToExecute Include="$(BuildStepsPackNuGet)">
