@@ -96,18 +96,56 @@ end
 
 # Install Consul template
 
-# Provisioning
-# Write the following file to /etc/consul/conf.d/client.json
-# {
-#
-#     "datacenter": "<DATACENTER_NAME_HERE>",
-#
-#     "advertise_addr": "<SERVER_IP_ADDRESS_HERE>",
-#     "bind_addr": "<SERVER_IP_ADDRESS_HERE>",
-#     "retry_join": [<CONSUL_SERVER_IP_ADDRESSES_HERE>]
-#
-#     "encrypt": "<CONSUL_GOSSIP_ENCRYPT_KEY_HERE>"
-# }
-#
-# Restart the consul service with
-# sudo systemctl restart consul.service
+# Create the config files that will later be updated by the provisioning information
+file '/etc/consul/conf.d/client_location.json' do
+  action :create
+  content <<-JSON
+{
+  "datacenter": "$DATACENTER$",
+  "retry_join": [$CONSUL_SERVER_IP_ADDRESSES$]
+}
+  JSON
+end
+
+file '/etc/consul/conf.d/client_connections.json' do
+  action :create
+  content <<-JSON
+{
+  "advertise_addr": "$IPADDRESS$",
+  "bind_addr": "$IPADDRESS$"
+}
+  JSON
+end
+
+file '/etc/consul/conf.d/client_secrets.json' do
+  action :create
+  content <<-JSON
+{
+  "encrypt": "$GOSSIP_ENCRYPT_KEY$"
+}
+  JSON
+end
+
+file 'etc/init.d/provision.sh' do
+  action :create
+  content <<-BASH
+#!/bin/bash
+
+FLAG="/var/log/firstboot.log"
+if [ ! -f $FLAG ]; then
+   # If on the prod flag is set, disable SSH in the firewall
+
+   # Update '/etc/consul/conf.d/client_location.json'
+   # Update '/etc/consul/conf.d/client_connections.json'
+   # Update or delete '/etc/consul/conf.d/client_secrets.json'
+
+   sudo systemctl restart consul.service
+
+   # The next line creates an empty file so it won't run the next boot
+   touch $FLAG
+else
+   echo "Do nothing"
+fi
+  BASH
+  mode 755
+end
