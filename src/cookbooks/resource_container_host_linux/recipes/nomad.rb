@@ -5,7 +5,6 @@
 # Copyright 2017, P. van der Velde
 #
 
-
 file "#{Nomad::Helpers::CONFIG_ROOT}/nomad_client.hcl" do
   action :create
   content <<-HCL
