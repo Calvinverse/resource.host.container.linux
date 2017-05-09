@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Cookbook Name:: resource_container_host_linux
 # Recipe:: nomad
@@ -7,68 +9,68 @@
 
 file "#{Nomad::Helpers::CONFIG_ROOT}/nomad_client.hcl" do
   action :create
-  content <<-HCL
-  atlas {
-    join = false
-  }
-
-  client {
-    enabled = true
-    node_class = "linux"
-    reserved {
-      cpu            = 500
-      disk           = 1024
-      memory         = 512
-      reserved_ports = "22,8300-8600"
+  content <<~HCL
+    atlas {
+      join = false
     }
-  }
 
-  consul {
-    address = "127.0.0.1:8500"
-    auto_advertise = true
-    client_auto_join = true
-    server_auto_join = true
-  }
+    client {
+      enabled = true
+      node_class = "linux"
+      reserved {
+        cpu            = 500
+        disk           = 1024
+        memory         = 512
+        reserved_ports = "22,8300-8600"
+      }
+    }
 
-  data_dir = "/var/lib/nomad"
+    consul {
+      address = "127.0.0.1:8500"
+      auto_advertise = true
+      client_auto_join = true
+      server_auto_join = true
+    }
 
-  disable_update_check = true
+    data_dir = "/var/lib/nomad"
 
-  enable_syslog = true
+    disable_update_check = true
 
-  leave_on_interrupt = true
-  leave_on_terminate = true
+    enable_syslog = true
 
-  log_level = "DEBUG"
+    leave_on_interrupt = true
+    leave_on_terminate = true
 
-  server {
-    enabled = false
-  }
+    log_level = "DEBUG"
 
-  vault {
-    enabled = false
-  }
+    server {
+      enabled = false
+    }
+
+    vault {
+      enabled = false
+    }
   HCL
 end
 
 file "#{Nomad::Helpers::CONFIG_ROOT}/nomad_client_connections.hcl" do
   action :create
-  content <<-HCL
-  bind_addr = "#{node['ipaddress']}"
+  content <<~HCL
+    bind_addr = "#{node['ipaddress']}"
 
-  advertise {
-    http = "#{node['ipaddress']}"
-    rpc = "#{node['ipaddress']}"
-    serf = "#{node['ipaddress']}"
-  }
+    advertise {
+      http = "#{node['ipaddress']}"
+      rpc = "#{node['ipaddress']}"
+      serf = "#{node['ipaddress']}"
+    }
   HCL
 end
 
 file "#{Nomad::Helpers::CONFIG_ROOT}/nomad_client_location.hcl" do
   action :create
-  content <<-HCL
-  datacenter = "undefined"
-  region = "global"
+  content <<~HCL
+    datacenter = "undefined"
+    region = "global"
   HCL
 end
 

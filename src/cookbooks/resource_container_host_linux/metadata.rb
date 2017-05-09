@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 chef_version '>= 12.5' if respond_to?(:chef_version)
 description 'Environment cookbook that configures a Linux server as a container host with consul and nomad'
 issues_url '${ProductUrl}/issues' if respond_to?(:issues_url)

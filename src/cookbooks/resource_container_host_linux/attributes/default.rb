@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Nomad
 # Default daemon configuration
 default['nomad']['daemon_args'].tap do |da|

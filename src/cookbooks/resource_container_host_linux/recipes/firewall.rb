@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Cookbook Name:: resource_container_host_linux
 # Recipe:: firewall

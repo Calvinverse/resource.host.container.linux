@@ -14,3 +14,6 @@ AllCops:
     - 'berks/**/*'
     - 'packages/**/*'
     - 'src/**/*'
+  DefaultFormatter: progress
+  DisplayStyleGuide: true
+  TargetRubyVersion: 2.3
