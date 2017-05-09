@@ -98,56 +98,39 @@ end
 
 # Install Consul template
 
-# Create the config files that will later be updated by the provisioning information
-file '/etc/consul/conf.d/client_location.json' do
+# Configure the provisioning script
+file '/etc/init.d/provision.sh' do
   action :create
-  content <<-JSON
-{
-  "datacenter": "$DATACENTER$",
-  "retry_join": [$CONSUL_SERVER_IP_ADDRESSES$]
-}
-  JSON
-end
+  content <<~BASH
+    #!/bin/bash
 
-file '/etc/consul/conf.d/client_connections.json' do
-  action :create
-  content <<-JSON
-{
-  "advertise_addr": "$IPADDRESS$",
-  "bind_addr": "$IPADDRESS$"
-}
-  JSON
-end
+    FLAG="/var/log/firstboot.log"
+    if [ ! -f $FLAG ]; then
+      mount /dev/cdrom /mnt/cdrom
 
-file '/etc/consul/conf.d/client_secrets.json' do
-  action :create
-  content <<-JSON
-{
-  "encrypt": "$GOSSIP_ENCRYPT_KEY$"
-}
-  JSON
-end
+      # If the allow SSH file is not there, disable SSH in the firewall
+      if [ ! -f /mnt/cdrom/allow_ssh.json ]; then
+        ufw deny 22
+      fi
 
-file 'etc/init.d/provision.sh' do
-  action :create
-  content <<-BASH
-#!/bin/bash
+      # Update '/etc/consul/conf.d/client_location.json'
+      cp /mnt/cdrom/client_location.json /etc/consul/conf.d/client_location.json
 
-FLAG="/var/log/firstboot.log"
-if [ ! -f $FLAG ]; then
-   # If on the prod flag is set, disable SSH in the firewall
+      # Update '/etc/consul/conf.d/client_connections.json'
+      cp /mnt/cdrom/client_connections.json /etc/consul/conf.d/client_connections.json
 
-   # Update '/etc/consul/conf.d/client_location.json'
-   # Update '/etc/consul/conf.d/client_connections.json'
-   # Update or delete '/etc/consul/conf.d/client_secrets.json'
+      # Update or delete '/etc/consul/conf.d/client_secrets.json'
+      cp /mnt/cdrom/client_secrets.json /etc/consul/conf.d/client_secrets.json
 
-   sudo systemctl restart consul.service
+      umount /dev/cdrom
 
-   # The next line creates an empty file so it won't run the next boot
-   touch $FLAG
-else
-   echo "Do nothing"
-fi
+      sudo systemctl restart consul.service
+
+      # The next line creates an empty file so it won't run the next boot
+      touch $FLAG
+    else
+      echo "Provisioning script ran previously so nothing to do"
+    fi
   BASH
-  mode 755
+  mode '755'
 end
