@@ -7,6 +7,13 @@
 # Copyright 2017, P. van der Velde
 #
 
+directory Nomad::Helpers::CONFIG_ROOT.to_s do
+  owner 'root'
+  group 'root'
+  mode '0755'
+  action :create
+end
+
 file "#{Nomad::Helpers::CONFIG_ROOT}/nomad_client.hcl" do
   action :create
   content <<~HCL
