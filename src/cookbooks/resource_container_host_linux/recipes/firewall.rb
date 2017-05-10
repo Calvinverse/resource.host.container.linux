@@ -10,9 +10,6 @@
 # Allow communication on the loopback address (127.0.0.1 and ::1)
 node.default['firewall']['allow_loopback'] = true
 
-# Allow SSH connections
-node.default['firewall']['allow_ssh'] = true
-
 # Do not allow MOSH connections
 node.default['firewall']['allow_mosh'] = false
 
@@ -24,4 +21,11 @@ node.default['firewall']['ipv6_enabled'] = false
 
 firewall 'default' do
   action :install
+end
+
+firewall_rule 'ssh' do
+  command :allow
+  description 'Allow SSH traffic'
+  dest_port 22
+  direction :in
 end
