@@ -25,16 +25,8 @@ node.default['consul']['config']['server'] = false
 node.default['consul']['config']['verify_incoming'] = false
 node.default['consul']['config']['verify_outgoing'] = false
 
-# Don't set any values for the encryption values. They will be set in a separate
-# configuration file
-node.default['consul']['config']['ca_file'] = ''
-node.default['consul']['config']['cert_file'] = ''
-node.default['consul']['config']['key_file'] = ''
-
 # Bind the client address to the local host. The advertise and bind addresses
 # will be set in a separate configuration file
-node.default['consul']['config']['advertise_addr'] = ''
-node.default['consul']['config']['bind_addr'] = ''
 node.default['consul']['config']['client_addr'] = '127.0.0.1'
 
 # Disable remote exec
