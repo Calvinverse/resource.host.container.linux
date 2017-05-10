@@ -106,23 +106,32 @@ file '/etc/init.d/provision.sh' do
 
     FLAG="/var/log/firstboot.log"
     if [ ! -f $FLAG ]; then
-      mount /dev/cdrom /mnt/cdrom
+      if [ ! -d /mnt/dvd ]; then
+        mkdir /mnt/dvd
+      fi
+      mount /dev/dvd /mnt/dvd
 
       # If the allow SSH file is not there, disable SSH in the firewall
-      if [ ! -f /mnt/cdrom/allow_ssh.json ]; then
+      if [ ! -f /mnt/dvd/allow_ssh.json ]; then
         ufw deny 22
       fi
 
-      # Update '/etc/consul/conf.d/client_location.json'
-      cp /mnt/cdrom/client_location.json /etc/consul/conf.d/client_location.json
+      # Create '/etc/consul/conf.d/client_connections.json'
+      IPADDRESS=$(ifconfig eth0 | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')
+      cat << JSON > /etc/consul/conf.d/client_connections.json
+      {
+        "advertise_addr": "${IPADDRESS}",
+        "bind_addr": "${IPADDRESS}"
+      }
+      JSON
 
-      # Update '/etc/consul/conf.d/client_connections.json'
-      cp /mnt/cdrom/client_connections.json /etc/consul/conf.d/client_connections.json
+      # Copy '/etc/consul/conf.d/client_location.json'
+      cp /mnt/dvd/client_location.json /etc/consul/conf.d/client_location.json
 
-      # Update or delete '/etc/consul/conf.d/client_secrets.json'
-      cp /mnt/cdrom/client_secrets.json /etc/consul/conf.d/client_secrets.json
+      # Copy or delete '/etc/consul/conf.d/client_secrets.json'
+      cp /mnt/dvd/client_secrets.json /etc/consul/conf.d/client_secrets.json
 
-      umount /dev/cdrom
+      umount /dev/dvd
 
       sudo systemctl restart consul.service
 
