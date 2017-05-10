@@ -16,31 +16,25 @@ describe 'resource_container_host_linux::consul' do
 
     it 'opens the Consul HTTP port' do
       expect(chef_run).to create_firewall_rule('consul-http').with(
-        values: [{
-          command: 'allow',
-          dest_port: 8500,
-          direction: 'in'
-        }]
+        command: :allow,
+        dest_port: 8500,
+        direction: :in
       )
     end
 
     it 'opens the Consul serf LAN port' do
       expect(chef_run).to create_firewall_rule('consul-serf-lan').with(
-        values: [{
-          command: 'allow',
-          dest_port: 8301,
-          direction: 'in'
-        }]
+        command: :allow,
+        dest_port: 8301,
+        direction: :in
       )
     end
 
     it 'opens the Consul serf WAN port' do
       expect(chef_run).to create_firewall_rule('consul-serf-wan').with(
-        values: [{
-          command: 'allow',
-          dest_port: 8302,
-          direction: 'in'
-        }]
+        command: :allow,
+        dest_port: 8302,
+        direction: :in
       )
     end
   end

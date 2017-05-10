@@ -93,31 +93,25 @@ describe 'resource_container_host_linux::nomad' do
 
     it 'opens the Nomad HTTP port' do
       expect(chef_run).to create_firewall_rule('nomad-http').with(
-        values: [{
-          command: 'allow',
-          dest_port: 4646,
-          direction: 'in'
-        }]
+        command: :allow,
+        dest_port: 4646,
+        direction: :in
       )
     end
 
     it 'opens the Nomad serf LAN port' do
       expect(chef_run).to create_firewall_rule('nomad-rpc').with(
-        values: [{
-          command: 'allow',
-          dest_port: 4647,
-          direction: 'in'
-        }]
+        command: :allow,
+        dest_port: 4647,
+        direction: :in
       )
     end
 
     it 'opens the Nomad serf WAN port' do
       expect(chef_run).to create_firewall_rule('nomad-serf').with(
-        values: [{
-          command: 'allow',
-          dest_port: 4648,
-          direction: 'in'
-        }]
+        command: :allow,
+        dest_port: 4648,
+        direction: :in
       )
     end
   end
