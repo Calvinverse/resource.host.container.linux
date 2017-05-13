@@ -72,6 +72,12 @@ include_recipe 'nomad::install'
 # Command line will be: nomad agent -config="#{Nomad::Helpers::CONFIG_ROOT}"
 include_recipe 'nomad::manage'
 
+# Make sure the nomad service doesn't start automatically. This will be changed
+# after we have provisioned the box
+service 'nomad' do
+  action [:disable]
+end
+
 #
 # ALLOW NOMAD THROUGH THE FIREWALL
 #
