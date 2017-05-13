@@ -38,12 +38,4 @@ describe 'resource_container_host_linux::consul' do
       )
     end
   end
-
-  context 'configures consul provisioning' do
-    let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
-
-    it 'creates provision.sh in the /etc/init.d directory' do
-      expect(chef_run).to create_file('/etc/init.d/provision.sh')
-    end
-  end
 end

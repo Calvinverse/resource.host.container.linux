@@ -52,29 +52,6 @@ describe 'resource_container_host_linux::nomad' do
       expect(chef_run).to create_file('/etc/nomad-conf.d/nomad_client.hcl')
         .with_content(nomad_client_config_content)
     end
-
-    nomad_client_connection_config_content = <<~HCL
-      bind_addr = "10.0.0.2"
-
-      advertise {
-        http = "10.0.0.2"
-        rpc = "10.0.0.2"
-        serf = "10.0.0.2"
-      }
-    HCL
-    it 'creates nomad_client_connections.hcl in the nomad configuration directory' do
-      expect(chef_run).to create_file('/etc/nomad-conf.d/nomad_client_connections.hcl')
-        .with_content(nomad_client_connection_config_content)
-    end
-
-    nomad_client_location_config_content = <<~HCL
-      datacenter = "undefined"
-      region = "global"
-    HCL
-    it 'creates nomad_client_location.hcl in the nomad configuration directory' do
-      expect(chef_run).to create_file('/etc/nomad-conf.d/nomad_client_location.hcl')
-        .with_content(nomad_client_location_config_content)
-    end
   end
 
   context 'configures nomad' do

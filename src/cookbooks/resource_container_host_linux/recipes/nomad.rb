@@ -60,27 +60,6 @@ file "#{Nomad::Helpers::CONFIG_ROOT}/nomad_client.hcl" do
   HCL
 end
 
-file "#{Nomad::Helpers::CONFIG_ROOT}/nomad_client_connections.hcl" do
-  action :create
-  content <<~HCL
-    bind_addr = "#{node['ipaddress']}"
-
-    advertise {
-      http = "#{node['ipaddress']}"
-      rpc = "#{node['ipaddress']}"
-      serf = "#{node['ipaddress']}"
-    }
-  HCL
-end
-
-file "#{Nomad::Helpers::CONFIG_ROOT}/nomad_client_location.hcl" do
-  action :create
-  content <<~HCL
-    datacenter = "undefined"
-    region = "global"
-  HCL
-end
-
 #
 # INSTALL NOMAD
 #
@@ -117,24 +96,3 @@ firewall_rule 'nomad-serf' do
   dest_port 4648
   direction :in
 end
-
-# Use consul-template to update the nomad configuration files
-# consul_template 'nomad.json' do
-#   backup true
-#   command 'service name restart'
-#   command_timeout '60s'
-#   content <<-JSON
-#   {
-#     "template": {
-#       "backup": true,
-#       "command": "restart-service name",
-#       "command_timeout": "60s",
-#       "destination": "C:\\\\temp\\\\result",
-#       "source": "C:\\\\Progam Files\\\\consul-template\\\\templates\\\\example.ctmpl"
-#     }
-#   }
-#   JSON
-#   destination default['nomad']['daemon_args']['config']
-#   notifies :restart, 'consul_template_service[consul-template]', :delayed
-#   perms '0440'
-# end
