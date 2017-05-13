@@ -58,11 +58,6 @@ node.default['consul']['config']['domain'] = 'consulverse'
 # - Configuration: /etc/consul.json and /etc/consul/conf.d
 include_recipe 'consul::default'
 
-# Make the consul config file be owned by root so that it cannot be changed easily
-consul_config '/etc/consul/consul.json' do
-  owner 'root'
-end
-
 #
 # ALLOW CONSUL THROUGH THE FIREWALL
 #
