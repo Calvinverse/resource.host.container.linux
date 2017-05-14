@@ -1,0 +1,65 @@
+{
+    "variables": {
+        "host_ip": null,
+
+        "vm_import_directory": null,
+        "vm_name": "containerhost-ubuntu1604",
+        "vm_switch_name": "internal_switch",
+
+        "admin_username": "admin",
+        "admin_password": "admin",
+
+        "dir_cookbooks_src": "src/cookbooks",
+        "dir_cookbooks_vendors": "packages/vendor/cookbooks",
+        "dir_http_user": null,
+        "dir_temp": null,
+        "dir_vm_import": null
+    },
+    "builders": [
+        {
+            "boot_wait": "5s",
+            "boot_command": [],
+            "communicator": "ssh",
+            "generation": 2,
+            "guest_additions_mode": "disable",
+            "http_directory": "{{ user `dir_http_user` }}",
+            "output_directory": "{{ user `dir_temp` }}/{{ user `vm_name` }}",
+            "shutdown_command": "echo '{{user `admin_password`}}' | sudo -S -E shutdown -P now",
+            "shutdown_timeout": "5m",
+            "source_dir": "{{ user `dir_vm_import` }}",
+            "ssh_password": "{{user `admin_password`}}",
+            "ssh_timeout": "4h",
+            "ssh_username": "{{user `admin_username`}}",
+            "switch_name": "{{user `vm_switch_name`}}",
+            "type": "hyperv-vhd",
+            "vm_name": "{{ user `vm_name` }}"
+        }
+    ],
+    "provisioners": [
+        {
+            "execute_command": "echo '{{ user `admin_password` }}' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+            "inline": [
+                "echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers"
+            ],
+            "type": "shell"
+        },
+        {
+            "expect_disconnect": false,
+            "inline": [
+                "sudo -S -E apt-get install curl"
+            ],
+            "type": "shell"
+        },
+        {
+            "cookbook_paths": [
+                "{{ user `dir_cookbooks_src` }}",
+                "{{ user `dir_cookbooks_vendors` }}"
+            ],
+            "guest_os_type": "unix",
+            "run_list": [
+                "resource_container_host_linux::default"
+            ],
+            "type": "chef-solo"
+        }
+    ]
+}
