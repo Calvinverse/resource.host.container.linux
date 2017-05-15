@@ -17,8 +17,11 @@ docker_installation_package 'default' do
   version '1.13.0'
 end
 
-# Create the docker networks: macvlan bridge on the adapter that the host isn't using
-# docker_network 'macvlan_bridge' do
-#   driver 'macvlan'
-#   action :create
-# end
+# Create the docker networks: macvlan bridge
+docker_network 'macvlan_bridge' do
+  action :create
+  driver 'macvlan'
+  gateway '192.168.7.1'
+  ip_range '192.168.7.128/25'
+  subnet ['192.168.7.0/24']
+end
