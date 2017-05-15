@@ -69,16 +69,41 @@ firewall_rule 'consul-http' do
   direction :in
 end
 
-firewall_rule 'consul-serf-lan' do
+firewall_rule 'consul-rpc' do
   command :allow
-  description 'Allow Consul serf LAN traffic'
-  dest_port 8301
+  description 'Allow Consul rpc LAN traffic'
+  dest_port 8300
   direction :in
 end
 
-firewall_rule 'consul-serf-wan' do
+firewall_rule 'consul-serf-lan-tcp' do
   command :allow
-  description 'Allow Consul serf WAN traffic'
+  description 'Allow Consul serf LAN traffic on the TCP port'
+  dest_port 8301
+  direction :in
+  protocol :tcp
+end
+
+firewall_rule 'consul-serf-lan-udp' do
+  command :allow
+  description 'Allow Consul serf LAN traffic on the UDP port'
+  dest_port 8301
+  direction :in
+  protocol :udp
+end
+
+firewall_rule 'consul-serf-wan-tcp' do
+  command :allow
+  description 'Allow Consul serf WAN traffic on the TCP port'
   dest_port 8302
   direction :in
+  protocol :tcp
+end
+
+firewall_rule 'consul-serf-wan-udp' do
+  command :allow
+  description 'Allow Consul serf WAN traffic on the UDP port'
+  dest_port 8302
+  direction :in
+  protocol :udp
 end
