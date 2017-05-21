@@ -11,7 +11,7 @@ describe 'resource_container_host_linux::docker' do
         action: [:create],
         package_name: 'docker-engine',
         package_options: "--force-yes -o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-all'",
-        version: '1.13.0'
+        version: '17.05.0'
       )
     end
   end

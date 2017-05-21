@@ -9,19 +9,26 @@
 
 include_recipe 'chef-apt-docker::default'
 
+# Make docker run in experimental mode so that we have the ipvlan network driver
+file '/etc/docker/daemon.json' do
+  action :create
+  content <<~JSON
+    {
+        "experimental": true
+    }
+  JSON
+end
+
 # Install the latest version of docker
 docker_installation_package 'default' do
   action :create
   package_name 'docker-engine'
   package_options "--force-yes -o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-all'"
-  version '1.13.0'
+  version '17.05.0'
 end
 
-# Create the docker networks: macvlan bridge
-docker_network 'macvlan_bridge' do
-  action :create
-  driver 'macvlan'
-  gateway '192.168.7.1'
-  ip_range '192.168.7.128/25'
-  subnet ['192.168.7.0/24']
-end
+# Create the ipvlan network. Link to ETH0. Do this at provisioning time because we need to set the
+# IP-address range to be 192.168.x.0/24 where x depends on the host
+
+# Need to provide some way to route the ipvlan network so that it knows about the outside world
+# and the outside world knows about it -> BGP (e.g. https://github.com/osrg/gobgp)
