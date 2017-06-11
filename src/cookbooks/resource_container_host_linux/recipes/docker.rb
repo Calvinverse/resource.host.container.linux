@@ -9,6 +9,13 @@
 
 include_recipe 'chef-apt-docker::default'
 
+directory '/etc/docker' do
+  owner 'root'
+  group 'root'
+  mode '0755'
+  action :create
+end
+
 # Make docker run in experimental mode so that we have the ipvlan network driver
 file '/etc/docker/daemon.json' do
   action :create
