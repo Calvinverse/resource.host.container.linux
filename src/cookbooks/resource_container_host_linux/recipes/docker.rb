@@ -27,8 +27,8 @@ docker_installation_package 'default' do
   version '17.05.0'
 end
 
-# Create the ipvlan network. Link to ETH0. Do this at provisioning time because we need to set the
-# IP-address range to be 192.168.x.0/24 where x depends on the host
+# The docker network is set in the provisioning step because we need to set the IP range to something
+# sensible
 
 # Need to provide some way to route the ipvlan network so that it knows about the outside world
 # and the outside world knows about it -> BGP (e.g. https://github.com/osrg/gobgp)
