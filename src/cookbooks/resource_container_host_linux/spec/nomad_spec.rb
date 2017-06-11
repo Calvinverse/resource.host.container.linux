@@ -61,7 +61,17 @@ describe 'resource_container_host_linux::nomad' do
     end
 
     it 'installs the nomad service' do
-      expect(chef_run).to include_recipe('nomad::manage')
+      expect(chef_run).to create_systemd_service('nomad').with(
+        action: [:create],
+        after: %w[network-online.target],
+        description: 'Nomad System Scheduler',
+        documentation: 'https://nomadproject.io/docs/index.html',
+        requires: %w[network-online.target]
+      )
+    end
+
+    it 'disables the nomad service' do
+      expect(chef_run).to disable_service('nomad')
     end
   end
 
