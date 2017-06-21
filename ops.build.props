@@ -461,6 +461,10 @@
     -->
     <ItemGroup Condition=" '$(ShouldLoadChefCookbooksToAnalyze)' == 'true' ">
         <ChefCookbooksToAnalyze Include="$(DirBuildTempCookbooks)\resource_container_host_linux" >
+            <!--
+                Ignore:
+                FC071 - Missing LICENSE file: because it's there, just not in the expected directory
+            -->
             <RulesToExclude>FC071</RulesToExclude>
         </ChefCookbooksToAnalyze>
     </ItemGroup>
