@@ -59,14 +59,20 @@ file '/etc/init.d/provision.sh' do
       # Copy '/etc/nomad-conf.d/client_secrets.json'
       cp /mnt/dvd/nomad_client_secrets.hcl /etc/nomad-conf.d/client_secrets.hcl
 
-      # Copy the script that will be used to create the Doker IPVLAN network
+      # Copy the script that will be used to create the Docker IPVLAN network
       cp /mnt/dvd/docker_ipvlan.sh /tmp/docker_ipvlan.sh
+
+      # Copy the dnsmasq configuration
+      cp /mnt/dvd/10-consul /etc/dnsmasq.d/10-consul
 
       umount /dev/dvd
 
       # Run the script that creates the Docker IPVLAN network connection
       chmod a+x /tmp/docker_ipvlan.sh
       source /tmp/docker_ipvlan.sh
+
+      sudo systemctl enable dnsmasq.service
+      sudo systemctl restart dnsmasq.service
 
       sudo systemctl restart consul.service
 
