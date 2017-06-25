@@ -8,12 +8,6 @@
 #
 
 #
-# Configure the local resolver
-#
-
-include_recipe 'resolver::default'
-
-#
 # Configure DNSMasq
 #
 
@@ -28,6 +22,11 @@ end
 # setup the dnsmasq service
 dnsmasq_local_service 'default' do
   action %i[create disable]
+end
+
+dnsmasq_local_config 'default' do
+  filename 'default'
+  action :create
 end
 
 #
