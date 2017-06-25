@@ -48,22 +48,22 @@ file '/etc/init.d/provision.sh' do
       fi
 
       # Copy '/etc/consul/conf.d/client_location.json'
-      cp /mnt/dvd/consul_client_location.json /etc/consul/conf.d/client_location.json
+      cp -a /mnt/dvd/consul_client_location.json /etc/consul/conf.d/client_location.json
 
       # Copy '/etc/consul/conf.d/client_secrets.json'
-      cp /mnt/dvd/consul_client_secrets.json /etc/consul/conf.d/client_secrets.json
+      cp -a /mnt/dvd/consul_client_secrets.json /etc/consul/conf.d/client_secrets.json
 
       # Copy '/etc/nomad-conf.d/client_location.json'
-      cp /mnt/dvd/nomad_client_location.hcl /etc/nomad-conf.d/client_location.hcl
+      cp -a /mnt/dvd/nomad_client_location.hcl /etc/nomad-conf.d/client_location.hcl
 
       # Copy '/etc/nomad-conf.d/client_secrets.json'
-      cp /mnt/dvd/nomad_client_secrets.hcl /etc/nomad-conf.d/client_secrets.hcl
+      cp -a /mnt/dvd/nomad_client_secrets.hcl /etc/nomad-conf.d/client_secrets.hcl
 
       # Copy the script that will be used to create the Docker IPVLAN network
-      cp /mnt/dvd/docker_ipvlan.sh /tmp/docker_ipvlan.sh
+      cp -a /mnt/dvd/docker_ipvlan.sh /tmp/docker_ipvlan.sh
 
       # Copy the dnsmasq configuration
-      cp /mnt/dvd/10-consul /etc/dnsmasq.d/10-consul
+      cp -a /mnt/dvd/dnsmasq/. /etc/dnsmasq.d/
 
       umount /dev/dvd
 
