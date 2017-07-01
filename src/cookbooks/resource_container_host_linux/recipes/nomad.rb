@@ -70,12 +70,30 @@ include_recipe 'nomad::install'
 
 # Install the service that will run nomad
 # Command line will be: nomad agent -config="#{Nomad::Helpers::CONFIG_ROOT}"
-include_recipe 'nomad::manage'
+args = Nomad::Helpers.hash_to_arg_string(node['nomad']['daemon_args'])
+
+# Create the systemd service for nomad. Set it to depend on the network being up
+# so that it won't start unless the network stack is initialized and has an
+# IP address
+systemd_service 'nomad' do
+  action :create
+  after %w[network-online.target]
+  description 'Nomad System Scheduler'
+  documentation 'https://nomadproject.io/docs/index.html'
+  install do
+    wanted_by %w[multi-user.target]
+  end
+  service do
+    exec_start "/usr/local/bin/nomad agent #{args}"
+    restart 'on-failure'
+  end
+  requires %w[network-online.target]
+end
 
 # Make sure the nomad service doesn't start automatically. This will be changed
 # after we have provisioned the box
 service 'nomad' do
-  action [:disable]
+  action :disable
 end
 
 #

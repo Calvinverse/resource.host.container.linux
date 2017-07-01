@@ -19,6 +19,7 @@
         {
             "boot_wait": "5s",
             "boot_command": [],
+            "clone_from_vmxc_path": "{{ user `dir_vm_import` }}",
             "communicator": "ssh",
             "generation": 2,
             "guest_additions_mode": "disable",
@@ -26,12 +27,11 @@
             "output_directory": "{{ user `dir_temp` }}/{{ user `vm_name` }}",
             "shutdown_command": "echo '{{user `admin_password`}}' | sudo -S -E shutdown -P now",
             "shutdown_timeout": "5m",
-            "source_dir": "{{ user `dir_vm_import` }}",
             "ssh_password": "{{user `admin_password`}}",
             "ssh_timeout": "4h",
             "ssh_username": "{{user `admin_username`}}",
             "switch_name": "{{user `vm_switch_name`}}",
-            "type": "hyperv-vhd",
+            "type": "hyperv-vmcx",
             "vm_name": "{{ user `vm_name` }}"
         }
     ],
@@ -52,10 +52,11 @@
         },
         {
             "cookbook_paths": [
-                "{{ user `dir_cookbooks_src` }}",
                 "{{ user `dir_cookbooks_vendors` }}"
             ],
+            "execute_command": "sudo chef-solo --no-color -c {{.ConfigPath}} -j {{.JsonPath}}",
             "guest_os_type": "unix",
+            "install_command": "curl -LO https://omnitruck.chef.io/install.sh && {{if .Sudo}}sudo{{end}} bash ./install.sh -v 13.1.31 && rm install.sh",
             "run_list": [
                 "resource_container_host_linux::default"
             ],

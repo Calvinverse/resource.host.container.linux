@@ -48,18 +48,31 @@ file '/etc/init.d/provision.sh' do
       fi
 
       # Copy '/etc/consul/conf.d/client_location.json'
-      cp /mnt/dvd/consul_client_location.json /etc/consul/conf.d/client_location.json
+      cp -a /mnt/dvd/consul_client_location.json /etc/consul/conf.d/client_location.json
 
       # Copy '/etc/consul/conf.d/client_secrets.json'
-      cp /mnt/dvd/consul_client_secrets.json /etc/consul/conf.d/client_secrets.json
+      cp -a /mnt/dvd/consul_client_secrets.json /etc/consul/conf.d/client_secrets.json
 
       # Copy '/etc/nomad-conf.d/client_location.json'
-      cp /mnt/dvd/nomad_client_location.hcl /etc/nomad-conf.d/client_location.hcl
+      cp -a /mnt/dvd/nomad_client_location.hcl /etc/nomad-conf.d/client_location.hcl
 
       # Copy '/etc/nomad-conf.d/client_secrets.json'
-      cp /mnt/dvd/nomad_client_secrets.hcl /etc/nomad-conf.d/client_secrets.hcl
+      cp -a /mnt/dvd/nomad_client_secrets.hcl /etc/nomad-conf.d/client_secrets.hcl
+
+      # Copy the script that will be used to create the Docker IPVLAN network
+      cp -a /mnt/dvd/docker_ipvlan.sh /tmp/docker_ipvlan.sh
+
+      # Copy the unbound configuration
+      cp -a /mnt/dvd/unbound/. /etc/unbound.d/
 
       umount /dev/dvd
+
+      # Run the script that creates the Docker IPVLAN network connection
+      chmod a+x /tmp/docker_ipvlan.sh
+      source /tmp/docker_ipvlan.sh
+
+      sudo systemctl enable unbound.service
+      sudo systemctl restart unbound.service
 
       sudo systemctl restart consul.service
 

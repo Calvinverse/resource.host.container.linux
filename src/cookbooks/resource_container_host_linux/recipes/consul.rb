@@ -12,43 +12,6 @@ poise_service_user node['consul']['service_user'] do
   group node['consul']['service_group']
 end
 
-node.default['consul']['version'] = '0.8.1'
-
-#
-# GENERIC CONSUL CONFIGURATION
-#
-
-# This is not a consul server node
-node.default['consul']['config']['server'] = false
-
-# For the time being don't verify incoming and outgoing TLS signatures
-node.default['consul']['config']['verify_incoming'] = false
-node.default['consul']['config']['verify_outgoing'] = false
-
-# Bind the client address to the local host. The advertise and bind addresses
-# will be set in a separate configuration file
-node.default['consul']['config']['client_addr'] = '127.0.0.1'
-
-# Disable remote exec
-node.default['consul']['config']['disable_remote_exec'] = true
-
-# Disable the update check
-node.default['consul']['config']['disable_update_check'] = true
-
-# Always leave the cluster if we are terminated
-node.default['consul']['config']['leave_on_terminate'] = true
-
-# Send all logs to syslog
-node.default['consul']['config']['log_level'] = 'DEBUG'
-node.default['consul']['config']['enable_syslog'] = true
-
-#
-# ENVIRONMENT CONFIGURATION
-#
-
-# Set the domain
-node.default['consul']['config']['domain'] = 'consulverse'
-
 #
 # INSTALL CONSUL
 #
@@ -69,16 +32,49 @@ firewall_rule 'consul-http' do
   direction :in
 end
 
-firewall_rule 'consul-serf-lan' do
+firewall_rule 'consul-dns' do
   command :allow
-  description 'Allow Consul serf LAN traffic'
-  dest_port 8301
+  description 'Allow Consul DNS traffic'
+  dest_port 8600
+  direction :in
+  protocol :udp
+end
+
+firewall_rule 'consul-rpc' do
+  command :allow
+  description 'Allow Consul rpc LAN traffic'
+  dest_port 8300
   direction :in
 end
 
-firewall_rule 'consul-serf-wan' do
+firewall_rule 'consul-serf-lan-tcp' do
   command :allow
-  description 'Allow Consul serf WAN traffic'
+  description 'Allow Consul serf LAN traffic on the TCP port'
+  dest_port 8301
+  direction :in
+  protocol :tcp
+end
+
+firewall_rule 'consul-serf-lan-udp' do
+  command :allow
+  description 'Allow Consul serf LAN traffic on the UDP port'
+  dest_port 8301
+  direction :in
+  protocol :udp
+end
+
+firewall_rule 'consul-serf-wan-tcp' do
+  command :allow
+  description 'Allow Consul serf WAN traffic on the TCP port'
   dest_port 8302
   direction :in
+  protocol :tcp
+end
+
+firewall_rule 'consul-serf-wan-udp' do
+  command :allow
+  description 'Allow Consul serf WAN traffic on the UDP port'
+  dest_port 8302
+  direction :in
+  protocol :udp
 end

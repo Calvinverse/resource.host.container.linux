@@ -9,5 +9,14 @@ describe 'resource_container_host_linux::firewall' do
     it 'installs the default firewall' do
       expect(chef_run).to install_firewall('default')
     end
+
+    it 'opens the SSH TCP port' do
+      expect(chef_run).to create_firewall_rule('ssh').with(
+        command: :allow,
+        dest_port: 22,
+        direction: :in,
+        protocol: :tcp
+      )
+    end
   end
 end

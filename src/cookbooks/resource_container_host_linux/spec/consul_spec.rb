@@ -22,19 +22,56 @@ describe 'resource_container_host_linux::consul' do
       )
     end
 
-    it 'opens the Consul serf LAN port' do
-      expect(chef_run).to create_firewall_rule('consul-serf-lan').with(
+    it 'opens the Consul DNS port' do
+      expect(chef_run).to create_firewall_rule('consul-dns').with(
         command: :allow,
-        dest_port: 8301,
+        dest_port: 8600,
+        direction: :in,
+        protocol: :udp
+      )
+    end
+
+    it 'opens the Consul rpc port' do
+      expect(chef_run).to create_firewall_rule('consul-rpc').with(
+        command: :allow,
+        dest_port: 8300,
         direction: :in
       )
     end
 
-    it 'opens the Consul serf WAN port' do
-      expect(chef_run).to create_firewall_rule('consul-serf-wan').with(
+    it 'opens the Consul serf LAN TCP port' do
+      expect(chef_run).to create_firewall_rule('consul-serf-lan-tcp').with(
+        command: :allow,
+        dest_port: 8301,
+        direction: :in,
+        protocol: :tcp
+      )
+    end
+
+    it 'opens the Consul serf LAN UDP port' do
+      expect(chef_run).to create_firewall_rule('consul-serf-lan-udp').with(
+        command: :allow,
+        dest_port: 8301,
+        direction: :in,
+        protocol: :udp
+      )
+    end
+
+    it 'opens the Consul serf WAN TCP port' do
+      expect(chef_run).to create_firewall_rule('consul-serf-wan-tcp').with(
         command: :allow,
         dest_port: 8302,
-        direction: :in
+        direction: :in,
+        protocol: :tcp
+      )
+    end
+
+    it 'opens the Consul serf WAN UDP port' do
+      expect(chef_run).to create_firewall_rule('consul-serf-wan-udp').with(
+        command: :allow,
+        dest_port: 8302,
+        direction: :in,
+        protocol: :udp
       )
     end
   end

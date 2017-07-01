@@ -461,6 +461,10 @@
     -->
     <ItemGroup Condition=" '$(ShouldLoadChefCookbooksToAnalyze)' == 'true' ">
         <ChefCookbooksToAnalyze Include="$(DirBuildTempCookbooks)\resource_container_host_linux" >
+            <!--
+                Ignore:
+                FC071 - Missing LICENSE file: because it's there, just not in the expected directory
+            -->
             <RulesToExclude>FC071</RulesToExclude>
         </ChefCookbooksToAnalyze>
     </ItemGroup>
@@ -477,6 +481,30 @@
             <ChefSpecPattern>./spec/*_spec.rb</ChefSpecPattern>
         </ChefCookbooksToTest>
     </ItemGroup>
+
+
+    <!--
+        **** PACKER - PACK ****
+    -->
+    <PropertyGroup>
+        <!-- Indicate that packer should keep the image if an error occurs. -->
+        <!-- <PackerKeepImageOnError>false</PackerKeepImageOnError> -->
+    </PropertyGroup>
+
+
+    <!--
+        **** DOCKER - PACK ****
+    -->
+    <PropertyGroup>
+        <!-- Indicate that docker should ignore cached images if possible. -->
+        <!-- <DockerIgnoreCache>true</DockerIgnoreCache> -->
+
+        <!-- Indicate that docker should always pull images if possible -->
+        <!-- <DockerAlwaysPull>true</DockerAlwaysPull> -->
+
+        <!-- Indicate that docker should squash intermediate layers when creating an image -->
+        <!-- <DockerSquashImages>true</DockerSquashImages> -->
+    </PropertyGroup>
 
 
     <!--
@@ -1200,7 +1228,7 @@
             The full path and version to the packer command line executable. If not defined the packages directory is searched.
         -->
         <ToolsExternalPackerPath>UNDEFINED</ToolsExternalPackerPath>
-        <ToolsExternalPackerVersion>1.1.0</ToolsExternalPackerVersion>
+        <ToolsExternalPackerVersion>1.2.0</ToolsExternalPackerVersion>
     </PropertyGroup>
 
 
