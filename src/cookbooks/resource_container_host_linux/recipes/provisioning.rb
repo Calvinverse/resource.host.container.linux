@@ -62,8 +62,8 @@ file '/etc/init.d/provision.sh' do
       # Copy the script that will be used to create the Docker IPVLAN network
       cp -a /mnt/dvd/docker_ipvlan.sh /tmp/docker_ipvlan.sh
 
-      # Copy the dnsmasq configuration
-      cp -a /mnt/dvd/dnsmasq/. /etc/dnsmasq.d/
+      # Copy the unbound configuration
+      cp -a /mnt/dvd/unbound/. /etc/unbound.d/
 
       umount /dev/dvd
 
@@ -71,8 +71,8 @@ file '/etc/init.d/provision.sh' do
       chmod a+x /tmp/docker_ipvlan.sh
       source /tmp/docker_ipvlan.sh
 
-      sudo systemctl enable dnsmasq.service
-      sudo systemctl restart dnsmasq.service
+      sudo systemctl enable unbound.service
+      sudo systemctl restart unbound.service
 
       sudo systemctl restart consul.service
 

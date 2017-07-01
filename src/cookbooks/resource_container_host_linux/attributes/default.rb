@@ -98,7 +98,12 @@ default['firewall']['ipv6_enabled'] = false
 #
 
 #
-# RESOLVER
+# UNBOUND
 #
 
-default['resolver']['nameservers'] = ['127.0.0.1', '8.8.8.8']
+default['unbound']['service_user'] = 'unbound'
+default['unbound']['service_group'] = 'unbound'
+
+default['paths']['unbound_config'] = '/etc/unbound.d'
+
+default['file_name']['unbound_config_file'] = 'unbound.conf'

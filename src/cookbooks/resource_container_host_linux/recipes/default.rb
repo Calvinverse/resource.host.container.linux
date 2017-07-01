@@ -8,12 +8,6 @@
 #
 
 #
-# Configure the local resolver
-#
-
-include_recipe 'resolver::default'
-
-#
 # Include the local recipes
 #
 
