@@ -14,7 +14,7 @@ directory Nomad::Helpers::CONFIG_ROOT.to_s do
   action :create
 end
 
-file "#{Nomad::Helpers::CONFIG_ROOT}/nomad_client.hcl" do
+file "#{Nomad::Helpers::CONFIG_ROOT}/client.hcl" do
   action :create
   content <<~HCL
     atlas {

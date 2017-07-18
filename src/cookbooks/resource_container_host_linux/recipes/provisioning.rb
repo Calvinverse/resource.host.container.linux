@@ -32,10 +32,10 @@ file '/etc/init.d/provision.sh' do
       IPADDRESS=$(getEth0Ip)
 
       # Create '/etc/consul/conf.d/client_connections.json'
-      echo "{ \\"advertise_addr\\": \\"${IPADDRESS}\\", \\"bind_addr\\": \\"${IPADDRESS}\\" }"  > /etc/consul/conf.d/client_connections.json
+      echo "{ \\"advertise_addr\\": \\"${IPADDRESS}\\", \\"bind_addr\\": \\"${IPADDRESS}\\" }"  > /etc/consul/conf.d/connections.json
 
       # Create '/etc/nomad-conf.d/client_connections.hcl'
-      echo -e "bind_addr = \\"${IPADDRESS}\\"\\n advertise {\\n  http = \\"${IPADDRESS}\\"\\n  rpc = \\"${IPADDRESS}\\"\\n  serf = \\"${IPADDRESS}\\"\\n}"  > /etc/nomad-conf.d/client_connections.hcl
+      echo -e "bind_addr = \\"${IPADDRESS}\\"\\n advertise {\\n  http = \\"${IPADDRESS}\\"\\n  rpc = \\"${IPADDRESS}\\"\\n  serf = \\"${IPADDRESS}\\"\\n}"  > /etc/nomad-conf.d/connections.hcl
 
       if [ ! -d /mnt/dvd ]; then
         mkdir /mnt/dvd
@@ -47,11 +47,12 @@ file '/etc/init.d/provision.sh' do
         ufw deny 22
       fi
 
-      cp -a /mnt/dvd/consul/client/consul_client_location.json /etc/consul/conf.d/client_location.json
-      cp -a /mnt/dvd/consul/client/consul_client_secrets.json /etc/consul/conf.d/client_secrets.json
+      cp -a /mnt/dvd/consul/consul_region.json /etc/consul/conf.d/region.json
+      cp -a /mnt/dvd/consul/consul_secrets.json /etc/consul/conf.d/secrets.json
+      cp -a /mnt/dvd/consul/client/consul_client_location.json /etc/consul/conf.d/location.json
 
-      cp -a /mnt/dvd/nomad/client/nomad_client_location.hcl /etc/nomad-conf.d/client_location.hcl
-      cp -a /mnt/dvd/nomad/client/nomad_client_secrets.hcl /etc/nomad-conf.d/client_secrets.hcl
+      cp -a /mnt/dvd/nomad/nomad_region.hcl /etc/nomad-conf.d/region.hcl
+      cp -a /mnt/dvd/nomad/nomad_secrets.hcl /etc/nomad-conf.d/secrets.hcl
 
       # Copy the script that will be used to create the Docker IPVLAN network
       cp -a /mnt/dvd/docker_ipvlan.sh /tmp/docker_ipvlan.sh
