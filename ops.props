@@ -175,6 +175,8 @@
         <!-- The directory that will contain all the temporary files needed during the build process -->
         <!-- <DirBuildTemp>$(DirBuild)\temp</DirBuildTemp> -->
         <DirBuildTempCookbooks>$(DirBuildTemp)\cookbooks</DirBuildTempCookbooks>
+        <DirBuildTempTestsIntegrationPacker>$(DirBuildTemp)\tests\integration\packer</DirBuildTempTestsIntegrationPacker>
+        <DirBuildTempTestsIntegrationPester>$(DirBuildTemp)\tests\integration\pester</DirBuildTempTestsIntegrationPester>
         <DirBuildTempVm>$(DirBuildTemp)\vm</DirBuildTempVm>
         <DirBuildTempVmBase>$(DirBuildTempVm)\base</DirBuildTempVmBase>
 
@@ -193,7 +195,10 @@
         <!-- <DirTemplates>$(DirWorkspace)\templates</DirTemplates> -->
 
         <!-- The directory that contains all the test files for the project -->
-        <!-- <DirTest>$(DirWorkspace)\tests</DirTest> -->
+        <!-- <DirTests>$(DirWorkspace)\tests</DirTests> -->
+        <DirTestsIntegration>$(DirTests)\integration</DirTestsIntegration>
+        <DirTestsIntegrationPacker>$(DirTestsIntegration)\packer</DirTestsIntegrationPacker>
+        <DirTestsIntegrationPester>$(DirTestsIntegration)\pester</DirTestsIntegrationPester>
 
         <!-- The directory that contains all the vendor cookbooks -->
         <!-- <DirVendorCookbooks>$(DirWorkspace)\berks\cookbooks</DirVendorCookbooks> -->
@@ -543,6 +548,9 @@
         </TemplateTokens>
 
         <!-- For the Packer config -->
+        <TemplateTokens Include="DirDeployJsonEscaped">
+            <ReplacementValue>$(DirBuildDeploy.Replace('\', '/'))</ReplacementValue>
+        </TemplateTokens>
         <TemplateTokens Include="DirTempJsonEscaped">
             <ReplacementValue>$(DirBuildTemp.Replace('\', '/'))</ReplacementValue>
         </TemplateTokens>
@@ -554,6 +562,14 @@
         </TemplateTokens>
         <TemplateTokens Include="VmSwitch">
             <ReplacementValue>External switch</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens Include="VmSwitchVlan">
+            <ReplacementValue></ReplacementValue>
+        </TemplateTokens>
+
+        <!-- Directories -->
+        <TemplateTokens Include="DirTestsIntegration">
+            <ReplacementValue>$(DirTestsIntegration)</ReplacementValue>
         </TemplateTokens>
     </ItemGroup>
 
