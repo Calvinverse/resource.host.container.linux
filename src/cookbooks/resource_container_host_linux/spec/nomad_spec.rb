@@ -38,7 +38,7 @@ describe 'resource_container_host_linux::nomad' do
       leave_on_interrupt = true
       leave_on_terminate = true
 
-      log_level = "DEBUG"
+      log_level = "INFO"
 
       server {
         enabled = false

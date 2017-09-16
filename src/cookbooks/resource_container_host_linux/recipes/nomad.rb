@@ -48,7 +48,7 @@ file "#{Nomad::Helpers::CONFIG_ROOT}/client.hcl" do
     leave_on_interrupt = true
     leave_on_terminate = true
 
-    log_level = "DEBUG"
+    log_level = "INFO"
 
     server {
       enabled = false

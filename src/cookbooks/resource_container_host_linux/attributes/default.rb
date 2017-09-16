@@ -38,7 +38,7 @@ default['consul']['config']['dns_config'] = {
 default['consul']['config']['leave_on_terminate'] = true
 
 # Send all logs to syslog
-default['consul']['config']['log_level'] = 'DEBUG'
+default['consul']['config']['log_level'] = 'INFO'
 default['consul']['config']['enable_syslog'] = true
 
 default['consul']['config']['owner'] = 'root'
