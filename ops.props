@@ -226,8 +226,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <VersionUbuntu>16.04.1</VersionUbuntu>
-        <VersionLinuxBaseResource>0.1.0</VersionLinuxBaseResource>
+        <VersionLinuxBaseResource>0.1.2</VersionLinuxBaseResource>
     </PropertyGroup>
 
 
@@ -517,7 +516,7 @@
         <!-- <TemplateTokenGenerators>UNDEFINED</TemplateTokenGenerators> -->
     </PropertyGroup>
     <PropertyGroup>
-        <LinuxImage Condition=" '$(LinuxImage)' == '' ">resource.container.host.linux-ubuntu1604</LinuxImage>
+        <LinuxImage Condition=" '$(LinuxImage)' == '' ">resource.container.host.linux</LinuxImage>
     </PropertyGroup>
 
     <!--
