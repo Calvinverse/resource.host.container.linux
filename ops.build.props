@@ -142,6 +142,10 @@
         </BuildFilesToGenerate>
         <BuildFilesToGenerate Include="$(DirBuildTemp)\ubuntu_1604\packer_variables.json">
             <Template>$(DirSrcPacker)\ubuntu_1604\packer_variables.json</Template>
+        <BuildFilesToGenerate Include="$(DirBuildTempCookbooks)\$(NameCookbook)\attributes\resource_information.rb">
+            <Template>$(DirSrcCookbooks)\$(NameCookbook)\attributes\resource_information.rb</Template>
+            <Encoding></Encoding>
+        </BuildFilesToGenerate>
             <Encoding></Encoding>
         </BuildFilesToGenerate>
     </ItemGroup>
