@@ -41,9 +41,7 @@
         If the deletion process fails the build will continue and a warning will be printed.
     -->
     <ItemGroup Condition=" '$(ShouldLoadDirectoriesToDelete)' == 'true' ">
-        <!--
-        <DirectoriesToDelete Include="" />
-        -->
+        <DirectoriesToDelete Include="$(DirWorkspace)\berks" />
     </ItemGroup>
 
 
