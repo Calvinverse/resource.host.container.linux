@@ -44,36 +44,6 @@ default['consul']['config']['enable_syslog'] = true
 default['consul']['config']['owner'] = 'root'
 
 #
-# DNSMASQ
-#
-
-# Never forward plain names (without a dot or domain part)
-default['dnsmasq_local']['config']['domain_needed'] = true
-
-# Never forward addresses in the non-routed address spaces.
-default['dnsmasq_local']['config']['bogus_priv'] = true
-
-# Disable negative caching
-default['dnsmasq_local']['config']['no_negcache'] = true
-
-# Normally responses which come from /etc/hosts and the DHCP lease
-# file have Time-To-Live set as zero, which conventionally means
-# do not cache further. If you are happy to trade lower load on the
-# server for potentially stale date, you can set a time-to-live (in
-# seconds) here.
-default['dnsmasq_local']['config']['local_ttl'] = 10
-
-# If you want dnsmasq to detect attempts by Verisign to send queries
-# to unregistered .com and .net hosts to its sitefinder service and
-# have dnsmasq instead return the correct NXDOMAIN response, uncomment
-# this line. You can add similar lines to do the same for other
-# registries which have implemented wildcard A records.
-default['dnsmasq_local']['config']['bogus_nxdomain'] = '64.94.110.11'
-
-# Include all the files in a directory except those ending in .dpkg-dist, dpkg-old and dpkg-new
-default['dnsmasq_local']['config']['conf_dir'] = '/etc/dnsmasq.d,.dpkg-dist,.dpkg-old,.dpkg-new'
-
-#
 # FIREWALL
 #
 

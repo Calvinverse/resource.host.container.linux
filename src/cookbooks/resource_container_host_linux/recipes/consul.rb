@@ -18,7 +18,7 @@ end
 
 # This installs consul as follows
 # - Binaries: /usr/local/bin/consul
-# - Configuration: /etc/consul.json and /etc/consul/conf.d
+# - Configuration: /etc/consul/consul.json and /etc/consul/conf.d
 include_recipe 'consul::default'
 
 #
