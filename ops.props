@@ -610,6 +610,12 @@
             The full path to the berkshelf application. If not defined the Gems bin directory is searched.
         -->
         <ToolsExternalBerkshelfPath>berks</ToolsExternalBerkshelfPath>
+
+        <!--
+            The full path and version to the packer command line executable. If not defined the packages directory is searched.
+        -->
+        <ToolsExternalPackerPath>UNDEFINED</ToolsExternalPackerPath>
+        <ToolsExternalPackerVersion>1.2.0</ToolsExternalPackerVersion>
     </PropertyGroup>
 
 
@@ -625,7 +631,7 @@
     -->
 
     <PropertyGroup>
-        <OpsConfigurationVersion>0.2</OpsConfigurationVersion>
+        <OpsConfigurationVersion>0.3</OpsConfigurationVersion>
     </PropertyGroup>
 
     <!--
@@ -633,7 +639,7 @@
         NuGet if no package is specified in the packages.config file.
     -->
     <PropertyGroup>
-        <PackageMinimumVersion Condition=" '$(PackageMinimumVersion)' == '' ">0.2.0</PackageMinimumVersion>
-        <PackageMaximumVersion Condition=" '$(PackageMaximumVersion)' == '' ">0.3.0</PackageMaximumVersion>
+        <PackageMinimumVersion Condition=" '$(PackageMinimumVersion)' == '' ">0.3.0</PackageMinimumVersion>
+        <PackageMaximumVersion Condition=" '$(PackageMaximumVersion)' == '' ">0.4.0</PackageMaximumVersion>
     </PropertyGroup>
 </Project>
