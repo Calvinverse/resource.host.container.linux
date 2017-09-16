@@ -199,6 +199,10 @@
         <!-- <DirVendorCookbooks>$(DirWorkspace)\berks\cookbooks</DirVendorCookbooks> -->
     </PropertyGroup>
 
+    <PropertyGroup>
+        <NameCookbook>resource_container_host_linux</NameCookbook>
+    </PropertyGroup>
+
     <!--
         Global files
     -->
@@ -275,7 +279,7 @@
         The collection of cookbooks for which the dependencies should be restored with Berkshelf
     -->
     <ItemGroup Condition=" '$(ShouldLoadChefCookbooksToRestore)' == 'true' ">
-        <ChefCookbooksToRestore Include="$(DirBuildTempCookbooks)\resource_container_host_linux" />
+        <ChefCookbooksToRestore Include="$(DirBuildTempCookbooks)\$(NameCookbook)" />
     </ItemGroup>
 
 
