@@ -93,6 +93,9 @@ default['firewall']['ipv6_enabled'] = false
 # NOMAD
 #
 
+default['nomad']['package'] = '0.6.2/nomad_0.6.2_linux_amd64.zip'
+default['nomad']['checksum'] = 'fbcb19a848fab36e86ed91bb66a1602cdff5ea7074a6d00162b96103185827b4'
+
 #
 # PROVISIONING
 #
