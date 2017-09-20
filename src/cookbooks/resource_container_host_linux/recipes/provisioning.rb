@@ -85,6 +85,10 @@ file '/etc/init.d/provision.sh' do
       #
       # CONSUL CONFIGURATION
       #
+      # Stop the consul service and kill the data directory. It will have the consul node-id in it which must go!
+      sudo systemctl stop consul.service
+      sudo rm -rfv /var/lib/consul/*
+
       cp -a /mnt/dvd/consul/consul_region.json /etc/consul/conf.d/region.json
       dos2unix /etc/consul/conf.d/region.json
 
