@@ -29,13 +29,23 @@ end
 # Install the latest version of docker
 docker_installation_package 'default' do
   action :create
-  package_name 'docker-engine'
+  package_name 'docker-ce'
   package_options "--force-yes -o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-all'"
-  version '17.05.0'
+  version '17.09.0'
+end
+
+#
+# UPDATE THE NETWORK INTERFACE
+#
+
+# Turn on promiscuous mode so that all packets for all MAC addresses are processed, including
+# the ones for the docker containers
+file '/etc/network/interface' do
+  action :create
+  content <<~SCRIPT
+    up /sbin/ifconfig eth0 promisc on
+  SCRIPT
 end
 
 # The docker network is set in the provisioning step because we need to set the IP range to something
 # sensible
-
-# Need to provide some way to route the ipvlan network so that it knows about the outside world
-# and the outside world knows about it -> BGP (e.g. https://github.com/osrg/gobgp)

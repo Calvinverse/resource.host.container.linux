@@ -75,4 +75,15 @@ WantedBy=multi-user.target
             $systemctlOutput[2] | Should Match 'Active:\sactive\s\(running\).*'
         }
     }
+
+    Context 'has the network' {
+        $output = docker network ls
+        $line = $output |
+            Where-Object { $_.Contains('docker_macvlan') } |
+            Select-Object -First 1
+
+        It 'should have a macvlan network' {
+            $line | Should Not Be ''
+        }
+    }
 }

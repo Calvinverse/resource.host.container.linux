@@ -33,7 +33,7 @@ file '/etc/init.d/provision.sh' do
   content <<~BASH
     #!/bin/bash
 
-    function getEth0Ip {
+    function f_getEth0Ip {
       local _ip _line
       while IFS=$': \t' read -a _line ;do
           [ -z "${_line%inet}" ] &&
@@ -42,7 +42,22 @@ file '/etc/init.d/provision.sh' do
         done< <(LANG=C /sbin/ifconfig eth0)
     }
 
-    function setHostName {
+    function f_getPrivateAddressSpace {
+      # Assume that $1 is the IP address for the machine
+      if [[ $1 == 192.* ]]; then
+        echo "192.168.0.0/16"
+        return 0
+      fi
+
+      if [[ $1 == 172.* ]]; then
+        echo "172.16.0.0/12"
+        return 0
+      fi
+
+      echo "10.0.0.0/8"
+    }
+
+    function f_setHostName {
       # Generate a 16 character password
       POSTFIX=$(pwgen --no-capitalize 16 1)
 
@@ -53,9 +68,9 @@ file '/etc/init.d/provision.sh' do
     FLAG="/var/log/firstboot.log"
     if [ ! -f $FLAG ]; then
 
-      setHostName
+      f_setHostName
 
-      IPADDRESS=$(getEth0Ip)
+      IPADDRESS=$(f_getEth0Ip)
 
       #
       # CREATE MACHINE SPECIFIC CONFIGURATION FILES
@@ -97,6 +112,25 @@ file '/etc/init.d/provision.sh' do
 
       cp -a /mnt/dvd/consul/client/consul_client_location.json /etc/consul/conf.d/location.json
       dos2unix /etc/consul/conf.d/location.json
+
+      #
+      # DOCKER CONFIGURATION
+      #
+      # Copy the script that will be used to create the Docker MacVlan network
+      cp -a /mnt/dvd/get_docker_subnet_information.sh /tmp/get_docker_subnet_information.sh
+      dos2unix /tmp/get_docker_subnet_information.sh
+
+      # Run the script that creates the Docker network connection
+      . /tmp/get_docker_subnet_information.sh
+
+      ADDRESS_SPACE = $(f_getPrivateAddressSpace $IPADDRESS)
+      IPRANGE=$(f_getContainerSubnet)
+      VLANTAG=$(f_getVlanTag)
+      if [[ $VLANTAG != .* ]]; then
+        VLANTAG=.$(VLANTAG)
+      fi
+
+      docker network create -d macvlan --subnet=$ADDRESS_SPACE --ip-range=$IPRANGE --gateway=$GATEWAY -o parent=eth0${VLANTAG} docker_macvlan
 
       #
       # NOMAD CONFIGURATION
