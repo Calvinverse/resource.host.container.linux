@@ -19,7 +19,7 @@
             "clone_from_vmxc_path": "{{ user `dir_temp` }}/{{ user `vm_name` }}",
             "communicator": "ssh",
             "enable_dynamic_memory": false,
-            "enable_mac_spoofing": false,
+            "enable_mac_spoofing": true,
             "enable_secure_boot": false,
             "enable_virtualization_extensions": false,
             "generation": 2,

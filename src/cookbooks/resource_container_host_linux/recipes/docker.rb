@@ -40,10 +40,24 @@ end
 
 # Turn on promiscuous mode so that all packets for all MAC addresses are processed, including
 # the ones for the docker containers
-file '/etc/network/interface' do
+file '/etc/network/interfaces' do
   action :create
   content <<~SCRIPT
-    up /sbin/ifconfig eth0 promisc on
+    # This file describes the network interfaces available on your system
+    # and how to activate them. For more information, see interfaces(5).
+
+    source /etc/network/interfaces.d/*
+
+    # The loopback network interface
+    auto lo
+    iface lo inet loopback
+
+    # The primary network interface
+    auto eth0
+    iface eth0 inet dhcp
+        pre-up sleep 2
+        up ifconfig eth0 promisc on
+        down ifconfig eth0 promisc off
   SCRIPT
 end
 
