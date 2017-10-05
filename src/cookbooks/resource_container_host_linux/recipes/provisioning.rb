@@ -42,21 +42,6 @@ file '/etc/init.d/provision.sh' do
         done< <(LANG=C /sbin/ifconfig eth0)
     }
 
-    function f_getPrivateAddressSpace {
-      # Assume that $1 is the IP address for the machine
-      if [[ $1 == 192.* ]]; then
-        echo "192.168.0.0/16"
-        return 0
-      fi
-
-      if [[ $1 == 172.* ]]; then
-        echo "172.16.0.0/12"
-        return 0
-      fi
-
-      echo "10.0.0.0/8"
-    }
-
     function f_setHostName {
       # Generate a 16 character password
       POSTFIX=$(pwgen --no-capitalize 16 1)
@@ -123,11 +108,12 @@ file '/etc/init.d/provision.sh' do
       # Run the script that creates the Docker network connection
       . /tmp/get_docker_subnet_information.sh
 
-      ADDRESS_SPACE = $(f_getPrivateAddressSpace $IPADDRESS)
-      IPRANGE=$(f_getContainerSubnet)
+      ADDRESS_SPACE=$(f_getPrivateAddressSpace $IPADDRESS)
+      IPRANGE=$(f_getContainerSubnet $IPADDRESS)
+      GATEWAY=$(f_getContainerGateway $IPADDRESS)
       VLANTAG=$(f_getVlanTag)
-      if [[ $VLANTAG != .* ]]; then
-        VLANTAG=.$(VLANTAG)
+      if [[ $VLANTAG != '' && $VLANTAG != .* ]]; then
+        VLANTAG=".${VLANTAG}"
       fi
 
       docker network create -d macvlan --subnet=$ADDRESS_SPACE --ip-range=$IPRANGE --gateway=$GATEWAY -o parent=eth0${VLANTAG} docker_macvlan
