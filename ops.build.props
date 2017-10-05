@@ -41,9 +41,7 @@
         If the deletion process fails the build will continue and a warning will be printed.
     -->
     <ItemGroup Condition=" '$(ShouldLoadDirectoriesToDelete)' == 'true' ">
-        <!--
-        <DirectoriesToDelete Include="" />
-        -->
+        <DirectoriesToDelete Include="$(DirWorkspace)\berks" />
     </ItemGroup>
 
 
@@ -79,9 +77,9 @@
     -->
     <ItemGroup Condition=" '$(ShouldLoadFilesToCopy)' == 'true' ">
         <FilesToCopy
-            Exclude="$(DirSrcCookbooks)\**\metadata.rb"
-            Include="$(DirSrcCookbooks)\**\*.*">
-            <Destination>$(DirBuildTempCookbooks)</Destination>
+            Exclude="$(DirSrcCookbooks)\$(NameCookbook)\metadata.rb;$(DirSrcCookbooks)\$(NameCookbook)\attributes\resource_information.rb"
+            Include="$(DirSrcCookbooks)\$(NameCookbook)\**\*.*">
+            <Destination>$(DirBuildTempCookbooks)\$(NameCookbook)</Destination>
         </FilesToCopy>
     </ItemGroup>
     <ItemGroup Condition=" '$(ShouldLoadNuGetFilesToCopy)' == 'true' ">
@@ -93,7 +91,7 @@
         -->
     </ItemGroup>
     <ItemGroup Condition=" '$(ShouldLoadArchiveFilesToCopy)' == 'true' ">
-        <ArchiveFilesToCopy Include="$(RepositoryArchive)\ubuntu-$(VersionUbuntu)-$(VersionLinuxBaseResource).zip">
+        <ArchiveFilesToCopy Include="$(RepositoryArchive)\Base.Linux-$(VersionLinuxBaseResource).zip">
             <Destination>$(DirBuildTempVmBase)</Destination>
         </ArchiveFilesToCopy>
     </ItemGroup>
@@ -136,12 +134,17 @@
         Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
     -->
     <ItemGroup Condition=" '$(ShouldLoadBuildFilesToGenerate)' == 'true' ">
-        <BuildFilesToGenerate Include="$(DirBuildTempCookbooks)\resource_container_host_linux\metadata.rb">
-            <Template>$(DirSrcCookbooks)\resource_container_host_linux\metadata.rb</Template>
+        <BuildFilesToGenerate Include="$(DirBuildTempCookbooks)\$(NameCookbook)\metadata.rb">
+            <Template>$(DirSrcCookbooks)\$(NameCookbook)\metadata.rb</Template>
             <Encoding></Encoding>
         </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\ubuntu_1604\packer_variables.json">
-            <Template>$(DirSrcPacker)\ubuntu_1604\packer_variables.json</Template>
+        <BuildFilesToGenerate Include="$(DirBuildTempCookbooks)\$(NameCookbook)\attributes\resource_information.rb">
+            <Template>$(DirSrcCookbooks)\$(NameCookbook)\attributes\resource_information.rb</Template>
+            <Encoding></Encoding>
+        </BuildFilesToGenerate>
+
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\packer_variables.json">
+            <Template>$(DirSrcPacker)\packer_variables.json</Template>
             <Encoding></Encoding>
         </BuildFilesToGenerate>
     </ItemGroup>
@@ -460,7 +463,7 @@
         The collection of cookbooks that should be analyzed with Foodcritic
     -->
     <ItemGroup Condition=" '$(ShouldLoadChefCookbooksToAnalyze)' == 'true' ">
-        <ChefCookbooksToAnalyze Include="$(DirBuildTempCookbooks)\resource_container_host_linux" >
+        <ChefCookbooksToAnalyze Include="$(DirBuildTempCookbooks)\$(NameCookbook)" >
             <!--
                 Ignore:
                 FC071 - Missing LICENSE file: because it's there, just not in the expected directory
@@ -477,7 +480,7 @@
         The collection of cookbooks that should be tested with ChefSpec.
     -->
     <ItemGroup Condition=" '$(ShouldLoadChefCookbooksToTest)' == 'true' ">
-        <ChefCookbooksToTest Include="$(DirBuildTempCookbooks)\resource_container_host_linux">
+        <ChefCookbooksToTest Include="$(DirBuildTempCookbooks)\$(NameCookbook)">
             <ChefSpecPattern>./spec/*_spec.rb</ChefSpecPattern>
         </ChefCookbooksToTest>
     </ItemGroup>
@@ -1190,12 +1193,6 @@
         <ToolsExternalMkIsoFsVersion>3.2.7.0</ToolsExternalMkIsoFsVersion>
 
         <!--
-            The full path and version to the packer command line executable. If not defined the packages directory is searched.
-        -->
-        <ToolsExternalPackerPath>UNDEFINED</ToolsExternalPackerPath>
-        <ToolsExternalPackerVersion>1.0.0</ToolsExternalPackerVersion>
-
-        <!--
             The full path and version to the rspec command line executable. If not defined
             the Gems binary directory is searched.
         -->
@@ -1208,27 +1205,6 @@
         -->
         <ToolsExternalRuboCopPath>rubocop</ToolsExternalRuboCopPath>
         <ToolsExternalRuboCopVersion>UNDEFINED</ToolsExternalRuboCopVersion>
-    </PropertyGroup>
-
-
-
-
-
-    <!--
-        *************************************
-        *                                   *
-        *     SHARED TOOLS                  *
-        *                                   *
-        *************************************
-    -->
-
-    <!-- Overrides for the tools paths -->
-    <PropertyGroup>
-        <!--
-            The full path and version to the packer command line executable. If not defined the packages directory is searched.
-        -->
-        <ToolsExternalPackerPath>UNDEFINED</ToolsExternalPackerPath>
-        <ToolsExternalPackerVersion>1.2.0</ToolsExternalPackerVersion>
     </PropertyGroup>
 
 

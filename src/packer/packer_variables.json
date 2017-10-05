@@ -1,10 +1,4 @@
 {
-    "host_ip": "${HostIpAddress}",
-
-    "vm_import_directory": null,
-    "vm_name": "${ImageName}",
-    "vm_switch_name": "${VmSwitch}",
-
     "admin_username": "${LocalAdministratorName}",
     "admin_password": "${LocalAdministratorPassword}",
 
@@ -12,5 +6,11 @@
     "dir_cookbooks_vendors": "${DirVendorCookbooksJsonEscaped}",
     "dir_http_user": "",
     "dir_temp": "${DirTempJsonEscaped}",
-    "dir_vm_import": "${DirTempJsonEscaped}/vm/base"
+    "dir_vm_import": "${DirTempJsonEscaped}/vm/base",
+
+    "vm_import_directory": null,
+    "vm_name": "${ImageName}",
+    "vm_ram_size_in_mb": "2048",
+    "vm_switch_name": "${VmSwitch}",
+    "vm_switch_vlan": "${VmSwitchVlan}"
 }
