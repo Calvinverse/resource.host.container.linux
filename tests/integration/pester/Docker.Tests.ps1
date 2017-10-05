@@ -83,6 +83,7 @@ WantedBy=multi-user.target
             Select-Object -First 1
 
         It 'should have a macvlan network' {
+            $line | Should Not Be $null
             $line | Should Not Be ''
         }
     }
