@@ -14,7 +14,7 @@ directory Nomad::Helpers::CONFIG_ROOT.to_s do
   action :create
 end
 
-file "#{Nomad::Helpers::CONFIG_ROOT}/nomad_client.hcl" do
+file "#{Nomad::Helpers::CONFIG_ROOT}/client.hcl" do
   action :create
   content <<~HCL
     atlas {
@@ -48,7 +48,7 @@ file "#{Nomad::Helpers::CONFIG_ROOT}/nomad_client.hcl" do
     leave_on_interrupt = true
     leave_on_terminate = true
 
-    log_level = "DEBUG"
+    log_level = "INFO"
 
     server {
       enabled = false

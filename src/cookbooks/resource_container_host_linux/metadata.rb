@@ -13,9 +13,9 @@ version '${VersionSemantic}'
 
 supports 'ubuntu', '>= 16.04'
 
-depends 'chef-apt-docker', '= 1.1.1'
+depends 'chef-apt-docker', '= 2.0.2'
 depends 'consul', '= 3.0.0'
-depends 'docker', '= 2.15.6'
-depends 'firewall', '= 2.6.1'
-depends 'nomad', '= 0.12.0'
+depends 'docker', '= 2.15.24'
+depends 'firewall', '= 2.6.2'
+depends 'nomad', '= 0.13.0'
 depends 'systemd', '= 2.1.3'

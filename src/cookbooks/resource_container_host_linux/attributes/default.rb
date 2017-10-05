@@ -4,7 +4,7 @@
 # CONSUL
 #
 
-default['consul']['version'] = '0.8.3'
+default['consul']['version'] = '0.9.2'
 default['consul']['config']['domain'] = 'consulverse'
 
 # This is not a consul server node
@@ -17,6 +17,9 @@ default['consul']['config']['verify_outgoing'] = false
 # Bind the client address to the local host. The advertise and bind addresses
 # will be set in a separate configuration file
 default['consul']['config']['client_addr'] = '127.0.0.1'
+
+# Do not allow consul to use the host information for the node id
+default['consul']['config']['disable_host_node_id'] = true
 
 # Disable remote exec
 default['consul']['config']['disable_remote_exec'] = true
@@ -38,40 +41,10 @@ default['consul']['config']['dns_config'] = {
 default['consul']['config']['leave_on_terminate'] = true
 
 # Send all logs to syslog
-default['consul']['config']['log_level'] = 'DEBUG'
+default['consul']['config']['log_level'] = 'INFO'
 default['consul']['config']['enable_syslog'] = true
 
 default['consul']['config']['owner'] = 'root'
-
-#
-# DNSMASQ
-#
-
-# Never forward plain names (without a dot or domain part)
-default['dnsmasq_local']['config']['domain_needed'] = true
-
-# Never forward addresses in the non-routed address spaces.
-default['dnsmasq_local']['config']['bogus_priv'] = true
-
-# Disable negative caching
-default['dnsmasq_local']['config']['no_negcache'] = true
-
-# Normally responses which come from /etc/hosts and the DHCP lease
-# file have Time-To-Live set as zero, which conventionally means
-# do not cache further. If you are happy to trade lower load on the
-# server for potentially stale date, you can set a time-to-live (in
-# seconds) here.
-default['dnsmasq_local']['config']['local_ttl'] = 10
-
-# If you want dnsmasq to detect attempts by Verisign to send queries
-# to unregistered .com and .net hosts to its sitefinder service and
-# have dnsmasq instead return the correct NXDOMAIN response, uncomment
-# this line. You can add similar lines to do the same for other
-# registries which have implemented wildcard A records.
-default['dnsmasq_local']['config']['bogus_nxdomain'] = '64.94.110.11'
-
-# Include all the files in a directory except those ending in .dpkg-dist, dpkg-old and dpkg-new
-default['dnsmasq_local']['config']['conf_dir'] = '/etc/dnsmasq.d,.dpkg-dist,.dpkg-old,.dpkg-new'
 
 #
 # FIREWALL
@@ -92,6 +65,9 @@ default['firewall']['ipv6_enabled'] = false
 #
 # NOMAD
 #
+
+default['nomad']['package'] = '0.6.2/nomad_0.6.2_linux_amd64.zip'
+default['nomad']['checksum'] = 'fbcb19a848fab36e86ed91bb66a1602cdff5ea7074a6d00162b96103185827b4'
 
 #
 # PROVISIONING

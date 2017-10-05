@@ -6,6 +6,14 @@ describe 'resource_container_host_linux::provisioning' do
   context 'configures provisioning' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
 
+    it 'installs the dos2unix package' do
+      expect(chef_run).to install_apt_package('dos2unix')
+    end
+
+    it 'installs the pwgen package' do
+      expect(chef_run).to install_apt_package('pwgen')
+    end
+
     it 'creates provision.sh in the /etc/init.d directory' do
       expect(chef_run).to create_file('/etc/init.d/provision.sh')
     end
