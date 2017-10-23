@@ -1,0 +1,12 @@
+{
+    "experimental": true,
+    "graph": "/srv/containers/docker",
+    "insecure-registries": [
+        "read-hosted-docker.artefacts.service.integrationtest:5000",
+        "read-mirror-docker.artefacts.service.integrationtest:5010",
+        "write-hosted-docker.artefacts.service.integrationtest:5000"
+    ],
+    "registry-mirrors": [
+        "read-mirror-docker.artefacts.service.integrationtest:5010"
+    ]
+}
