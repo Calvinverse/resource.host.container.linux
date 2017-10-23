@@ -14,6 +14,13 @@ directory Nomad::Helpers::CONFIG_ROOT.to_s do
   action :create
 end
 
+nomad_data_path = '/srv/containers/nomad/data'
+directory nomad_data_path do
+  action :create
+  mode '777'
+  recursive true
+end
+
 file "#{Nomad::Helpers::CONFIG_ROOT}/client.hcl" do
   action :create
   content <<~HCL
@@ -23,12 +30,13 @@ file "#{Nomad::Helpers::CONFIG_ROOT}/client.hcl" do
 
     client {
       enabled = true
-      node_class = "linux"
+      meta {
+      }
       reserved {
         cpu            = 500
         disk           = 1024
         memory         = 512
-        reserved_ports = "22,8300-8600"
+        reserved_ports = "22,53,8300-8600"
       }
     }
 
@@ -39,7 +47,7 @@ file "#{Nomad::Helpers::CONFIG_ROOT}/client.hcl" do
       server_auto_join = true
     }
 
-    data_dir = "/var/lib/nomad"
+    data_dir = "#{nomad_data_path}"
 
     disable_update_check = true
 

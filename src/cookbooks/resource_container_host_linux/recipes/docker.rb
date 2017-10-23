@@ -16,12 +16,20 @@ directory '/etc/docker' do
   action :create
 end
 
+docker_data_path = '/srv/containers/docker'
+directory docker_data_path do
+  action :create
+  mode '777'
+  recursive true
+end
+
 # Make docker run in experimental mode so that we have the ipvlan network driver
 file '/etc/docker/daemon.json' do
   action :create
   content <<~JSON
     {
-        "experimental": true
+        "experimental": true,
+        "graph": "#{docker_data_path}"
     }
   JSON
 end

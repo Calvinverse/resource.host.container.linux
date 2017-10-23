@@ -13,12 +13,13 @@ describe 'resource_container_host_linux::nomad' do
 
       client {
         enabled = true
-        node_class = "linux"
+        meta {
+        }
         reserved {
           cpu            = 500
           disk           = 1024
           memory         = 512
-          reserved_ports = "22,8300-8600"
+          reserved_ports = "22,53,8300-8600"
         }
       }
 
@@ -29,7 +30,7 @@ describe 'resource_container_host_linux::nomad' do
         server_auto_join = true
       }
 
-      data_dir = "/var/lib/nomad"
+      data_dir = "/srv/containers/nomad/data"
 
       disable_update_check = true
 
