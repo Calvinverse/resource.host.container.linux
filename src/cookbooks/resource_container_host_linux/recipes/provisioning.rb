@@ -101,6 +101,13 @@ file '/etc/init.d/provision.sh' do
       #
       # DOCKER CONFIGURATION
       #
+      # Set up the docker configuration to include the insecure registries
+      cp -a /mnt/dvd/docker/daemon.json /etc/docker/daemon.json
+      dos2unix /etc/docker/daemon.json
+
+      # Restart the service so that it picks up the new configuration
+      sudo systemctl restart docker.service
+
       # Copy the script that will be used to create the Docker MacVlan network
       cp -a /mnt/dvd/get_docker_subnet_information.sh /tmp/get_docker_subnet_information.sh
       dos2unix /tmp/get_docker_subnet_information.sh
