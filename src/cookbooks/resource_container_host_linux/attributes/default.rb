@@ -66,16 +66,8 @@ default['firewall']['ipv6_enabled'] = false
 # NOMAD
 #
 
-default['nomad']['package'] = '0.6.2/nomad_0.6.2_linux_amd64.zip'
-default['nomad']['checksum'] = 'fbcb19a848fab36e86ed91bb66a1602cdff5ea7074a6d00162b96103185827b4'
-
-#
-# PROVISIONING
-#
-
-#
-# UNBOUND
-#
+default['nomad']['package'] = '0.7.1/nomad_0.7.1_linux_amd64.zip'
+default['nomad']['checksum'] = '72b32799c2128ed9d2bb6cbf00c7600644a8d06c521a320e42d5493a5d8a789a'
 
 default['unbound']['service_user'] = 'unbound'
 default['unbound']['service_group'] = 'unbound'
