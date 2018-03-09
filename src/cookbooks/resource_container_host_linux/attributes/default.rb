@@ -7,7 +7,12 @@
 default['consul_template']['config_path'] = '/etc/consul-template.d/conf'
 default['consul_template']['template_path'] = '/etc/consul-template.d/templates'
 
+#
+# DOCKER
+#
 
+default['docker']['consul_template_network_script_file'] = 'docker_network.ctmpl'
+default['docker']['script_network_file'] = '/tmp/docker_network.sh'
 
 #
 # FIREWALL
