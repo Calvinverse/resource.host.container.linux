@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
 #
+# CONSULTEMPLATE
 #
 
+default['consul_template']['config_path'] = '/etc/consul-template.d/conf'
+default['consul_template']['template_path'] = '/etc/consul-template.d/templates'
 
 
 
