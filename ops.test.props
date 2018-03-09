@@ -389,6 +389,7 @@
             <PostSteps>
             </PostSteps>
         </TestStepsToExecute>
+
         <TestStepsToExecute Include="$(TestStepsPrepareFileHashes)">
             <Properties>
             </Properties>
