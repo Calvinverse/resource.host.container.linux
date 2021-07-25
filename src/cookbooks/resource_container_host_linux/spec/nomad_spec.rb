@@ -3,14 +3,22 @@
 require 'spec_helper'
 
 describe 'resource_container_host_linux::nomad' do
+  context 'creates the nomad directories' do
+    let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
+
+    it 'creates the nomad config directory' do
+      expect(chef_run).to create_directory('/etc/nomad-conf.d')
+    end
+
+    it 'creates the nomad raft directory' do
+      expect(chef_run).to create_directory('/srv/containers/nomad/data')
+    end
+  end
+
   context 'creates the nomad configuration files' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
 
     nomad_client_config_content = <<~HCL
-      atlas {
-        join = false
-      }
-
       client {
         enabled = true
         meta {
@@ -18,8 +26,8 @@ describe 'resource_container_host_linux::nomad' do
         reserved {
           cpu            = 500
           disk           = 1024
-          memory         = 512
-          reserved_ports = "22,53,8300-8600"
+          memory         = 256
+          reserved_ports = "22,53,8000-8600"
         }
       }
 
@@ -27,7 +35,7 @@ describe 'resource_container_host_linux::nomad' do
         address = "127.0.0.1:8500"
         auto_advertise = true
         client_auto_join = true
-        server_auto_join = true
+        server_service_name = "jobs"
       }
 
       data_dir = "/srv/containers/nomad/data"
@@ -36,22 +44,30 @@ describe 'resource_container_host_linux::nomad' do
 
       enable_syslog = true
 
-      leave_on_interrupt = true
-      leave_on_terminate = true
+      leave_on_interrupt = false
+      leave_on_terminate = false
 
       log_level = "INFO"
 
       server {
         enabled = false
       }
-
-      vault {
-        enabled = false
-      }
     HCL
     it 'creates client.hcl in the nomad configuration directory' do
       expect(chef_run).to create_file('/etc/nomad-conf.d/client.hcl')
         .with_content(nomad_client_config_content)
+    end
+
+    nomad_metrics_content = <<~CONF
+      telemetry {
+          publish_allocation_metrics = true
+          publish_node_metrics       = true
+          statsd_address = "127.0.0.1:8125"
+      }
+    CONF
+    it 'creates nomad metrics file in the nomad configuration directory' do
+      expect(chef_run).to create_file('/etc/nomad-conf.d/metrics.hcl')
+        .with_content(nomad_metrics_content)
     end
   end
 
@@ -71,8 +87,8 @@ describe 'resource_container_host_linux::nomad' do
       )
     end
 
-    it 'disables the nomad service' do
-      expect(chef_run).to disable_service('nomad')
+    it 'enables the nomad service' do
+      expect(chef_run).to enable_service('nomad')
     end
   end
 
@@ -101,6 +117,203 @@ describe 'resource_container_host_linux::nomad' do
         dest_port: 4648,
         direction: :in
       )
+    end
+  end
+
+  context 'adds the consul-template files for nomad' do
+    let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
+
+    nomad_region_template_content = <<~CONF
+      datacenter = "{{ keyOrDefault "config/services/consul/datacenter" "unknown" }}"
+      region = "{{ keyOrDefault "config/services/nomad/region" "unknown" }}"
+    CONF
+    it 'creates nomad region template file in the consul-template template directory' do
+      expect(chef_run).to create_file('/etc/consul-template.d/templates/nomad_region.ctmpl')
+        .with_content(nomad_region_template_content)
+    end
+
+    consul_template_nomad_region_content = <<~CONF
+      # This block defines the configuration for a template. Unlike other blocks,
+      # this block may be specified multiple times to configure multiple templates.
+      # It is also possible to configure templates via the CLI directly.
+      template {
+        # This is the source file on disk to use as the input template. This is often
+        # called the "Consul Template template". This option is required if not using
+        # the `contents` option.
+        source = "/etc/consul-template.d/templates/nomad_region.ctmpl"
+
+        # This is the destination path on disk where the source template will render.
+        # If the parent directories do not exist, Consul Template will attempt to
+        # create them, unless create_dest_dirs is false.
+        destination = "/etc/nomad-conf.d/region.hcl"
+
+        # This options tells Consul Template to create the parent directories of the
+        # destination path if they do not exist. The default value is true.
+        create_dest_dirs = false
+
+        # This is the optional command to run when the template is rendered. The
+        # command will only run if the resulting template changes. The command must
+        # return within 30s (configurable), and it must have a successful exit code.
+        # Consul Template is not a replacement for a process monitor or init system.
+        command = "systemctl restart nomad"
+
+        # This is the maximum amount of time to wait for the optional command to
+        # return. Default is 30s.
+        command_timeout = "15s"
+
+        # Exit with an error when accessing a struct or map field/key that does not
+        # exist. The default behavior will print "<no value>" when accessing a field
+        # that does not exist. It is highly recommended you set this to "true" when
+        # retrieving secrets from Vault.
+        error_on_missing_key = false
+
+        # This is the permission to render the file. If this option is left
+        # unspecified, Consul Template will attempt to match the permissions of the
+        # file that already exists at the destination path. If no file exists at that
+        # path, the permissions are 0644.
+        perms = 0755
+
+        # This option backs up the previously rendered template at the destination
+        # path before writing a new one. It keeps exactly one backup. This option is
+        # useful for preventing accidental changes to the data without having a
+        # rollback strategy.
+        backup = true
+
+        # These are the delimiters to use in the template. The default is "{{" and
+        # "}}", but for some templates, it may be easier to use a different delimiter
+        # that does not conflict with the output file itself.
+        left_delimiter  = "{{"
+        right_delimiter = "}}"
+
+        # This is the `minimum(:maximum)` to wait before rendering a new template to
+        # disk and triggering a command, separated by a colon (`:`). If the optional
+        # maximum value is omitted, it is assumed to be 4x the required minimum value.
+        # This is a numeric time with a unit suffix ("5s"). There is no default value.
+        # The wait value for a template takes precedence over any globally-configured
+        # wait.
+        wait {
+          min = "2s"
+          max = "10s"
+        }
+      }
+    CONF
+    it 'creates nomad_region.hcl in the consul-template template directory' do
+      expect(chef_run).to create_file('/etc/consul-template.d/conf/nomad_region.hcl')
+        .with_content(consul_template_nomad_region_content)
+    end
+
+    nomad_secrets_template_content = <<~CONF
+      vault {
+          ca_path = "/etc/certs/ca"
+          cert_file = "/var/certs/vault.crt"
+
+          # Setting the create_from_role option causes Nomad to create tokens for tasks
+          # via the provided role. This allows the role to manage what policies are
+          # allowed and disallowed for use by tasks.
+          create_from_role = "{{ keyOrDefault "config/services/nomad/vault/role" "nomad-cluster" }}"
+
+          address = "http://{{ keyOrDefault "config/services/secrets/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "consul" }}:{{ keyOrDefault "config/services/secrets/port" "80" }}"
+
+          enabled = {{ keyOrDefault "config/services/nomad/vault/enabled" "true" }}
+
+          key_file = "/var/certs/vault.key"
+
+          tls_skip_verify = {{ keyOrDefault "config/services/nomad/vault/tls/skip" "true" }}
+
+          # Embedding the token in the configuration is discouraged. Instead users
+          # should set the VAULT_TOKEN environment variable when starting the Nomad
+          # agent
+      {{ with secret "secret/services/nomad/token"}}
+        {{ if .Data.password }}
+          token = "{{ .Data.password }}"
+        {{ end }}
+      {{ end }}
+      }
+
+      tls {
+          http = {{ keyOrDefault "config/services/nomad/tls/http" "false" }}
+          rpc = {{ keyOrDefault "config/services/nomad/tls/rpc" "false" }}
+
+          ca_file = ""
+          cert_file = ""
+          key_file = ""
+
+          verify_server_hostname = {{ keyOrDefault "config/services/nomad/tls/verify" "false" }}
+      }
+    CONF
+    it 'creates nomad secrets template file in the consul-template template directory' do
+      expect(chef_run).to create_file('/etc/consul-template.d/templates/nomad_secrets.ctmpl')
+        .with_content(nomad_secrets_template_content)
+    end
+
+    consul_template_nomad_secrets_content = <<~CONF
+      # This block defines the configuration for a template. Unlike other blocks,
+      # this block may be specified multiple times to configure multiple templates.
+      # It is also possible to configure templates via the CLI directly.
+      template {
+        # This is the source file on disk to use as the input template. This is often
+        # called the "Consul Template template". This option is required if not using
+        # the `contents` option.
+        source = "/etc/consul-template.d/templates/nomad_secrets.ctmpl"
+
+        # This is the destination path on disk where the source template will render.
+        # If the parent directories do not exist, Consul Template will attempt to
+        # create them, unless create_dest_dirs is false.
+        destination = "/etc/nomad-conf.d/secrets.hcl"
+
+        # This options tells Consul Template to create the parent directories of the
+        # destination path if they do not exist. The default value is true.
+        create_dest_dirs = false
+
+        # This is the optional command to run when the template is rendered. The
+        # command will only run if the resulting template changes. The command must
+        # return within 30s (configurable), and it must have a successful exit code.
+        # Consul Template is not a replacement for a process monitor or init system.
+        command = "systemctl restart nomad"
+
+        # This is the maximum amount of time to wait for the optional command to
+        # return. Default is 30s.
+        command_timeout = "15s"
+
+        # Exit with an error when accessing a struct or map field/key that does not
+        # exist. The default behavior will print "<no value>" when accessing a field
+        # that does not exist. It is highly recommended you set this to "true" when
+        # retrieving secrets from Vault.
+        error_on_missing_key = false
+
+        # This is the permission to render the file. If this option is left
+        # unspecified, Consul Template will attempt to match the permissions of the
+        # file that already exists at the destination path. If no file exists at that
+        # path, the permissions are 0644.
+        perms = 0755
+
+        # This option backs up the previously rendered template at the destination
+        # path before writing a new one. It keeps exactly one backup. This option is
+        # useful for preventing accidental changes to the data without having a
+        # rollback strategy.
+        backup = true
+
+        # These are the delimiters to use in the template. The default is "{{" and
+        # "}}", but for some templates, it may be easier to use a different delimiter
+        # that does not conflict with the output file itself.
+        left_delimiter  = "{{"
+        right_delimiter = "}}"
+
+        # This is the `minimum(:maximum)` to wait before rendering a new template to
+        # disk and triggering a command, separated by a colon (`:`). If the optional
+        # maximum value is omitted, it is assumed to be 4x the required minimum value.
+        # This is a numeric time with a unit suffix ("5s"). There is no default value.
+        # The wait value for a template takes precedence over any globally-configured
+        # wait.
+        wait {
+          min = "2s"
+          max = "10s"
+        }
+      }
+    CONF
+    it 'creates nomad_secrets.hcl in the consul-template template directory' do
+      expect(chef_run).to create_file('/etc/consul-template.d/conf/nomad_secrets.hcl')
+        .with_content(consul_template_nomad_secrets_content)
     end
   end
 end
