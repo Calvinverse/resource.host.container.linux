@@ -7,8 +7,6 @@
 # Copyright 2017, P. van der Velde
 #
 
-include_recipe 'chef-apt-docker::default'
-
 directory '/etc/docker' do
   owner 'root'
   group 'root'
@@ -39,7 +37,7 @@ docker_installation_package 'default' do
   action :create
   package_name 'docker-ce'
   package_options "--force-yes -o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-all'"
-  version '17.12.1'
+  package_version '5:20.10.7~3-0~ubuntu-bionic'
 end
 
 #
@@ -108,22 +106,7 @@ file "#{consul_template_template_path}/#{docker_network_script_template_file}" d
 
     HOST_IP={{ key (printf "config/services/jobs/containers/hosts/%s/network/hostip" $hostname) }}
 
-
-
-
-
-
-
-
     # SET THE IP ADDRESS OF THE SECOND NETWORK INTERFACE ON THE HOST
-
-
-
-
-
-
-
-
     ADDRESS_SPACE={{ key (printf "config/services/jobs/containers/hosts/%s/network/subnet" $hostname) }}
     IPRANGE={{ key (printf "config/services/jobs/containers/hosts/%s/network/iprange" $hostname) }}
     GATEWAY={{ key (printf "config/services/jobs/containers/hosts/%s/network/gateway" $hostname) }}

@@ -11,7 +11,7 @@ describe 'resource_container_host_linux::docker' do
         action: [:create],
         package_name: 'docker-ce',
         package_options: "--force-yes -o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-all'",
-        version: '17.09.0'
+        package_version: '5:20.10.7~3-0~ubuntu-bionic'
       )
     end
   end
@@ -32,9 +32,13 @@ describe 'resource_container_host_linux::docker' do
       # The primary network interface
       auto eth0
       iface eth0 inet dhcp
+
+      # The secundary network interface. This one is used by docker
+      auto eth1
+      iface eth1 inet dhcp
           pre-up sleep 2
-          up ifconfig eth0 promisc on
-          down ifconfig eth0 promisc off
+          up ifconfig eth1 promisc on
+          down ifconfig eth1 promisc off
     SCRIPT
     it 'creates /etc/network/interfaces' do
       expect(chef_run).to create_file('/etc/network/interfaces')

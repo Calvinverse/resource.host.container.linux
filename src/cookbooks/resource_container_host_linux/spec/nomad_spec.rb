@@ -7,7 +7,7 @@ describe 'resource_container_host_linux::nomad' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
 
     it 'creates the nomad config directory' do
-      expect(chef_run).to create_directory('/etc/nomad-conf.d')
+      expect(chef_run).to create_directory('/etc/nomad.conf.d')
     end
 
     it 'creates the nomad raft directory' do
@@ -53,8 +53,8 @@ describe 'resource_container_host_linux::nomad' do
         enabled = false
       }
     HCL
-    it 'creates client.hcl in the nomad configuration directory' do
-      expect(chef_run).to create_file('/etc/nomad-conf.d/client.hcl')
+    it 'creates base.hcl in the nomad configuration directory' do
+      expect(chef_run).to create_file('/etc/nomad.conf.d/base.hcl')
         .with_content(nomad_client_config_content)
     end
 
@@ -66,7 +66,7 @@ describe 'resource_container_host_linux::nomad' do
       }
     CONF
     it 'creates nomad metrics file in the nomad configuration directory' do
-      expect(chef_run).to create_file('/etc/nomad-conf.d/metrics.hcl')
+      expect(chef_run).to create_file('/etc/nomad.conf.d/metrics.hcl')
         .with_content(nomad_metrics_content)
     end
   end
@@ -80,10 +80,13 @@ describe 'resource_container_host_linux::nomad' do
     it 'installs the nomad service' do
       expect(chef_run).to create_systemd_service('nomad').with(
         action: [:create],
-        after: %w[network-online.target],
-        description: 'Nomad System Scheduler',
-        documentation: 'https://nomadproject.io/docs/index.html',
-        requires: %w[network-online.target]
+        unit_after: %w[network-online.target],
+        unit_description: 'Nomad System Scheduler',
+        unit_requires: %w[network-online.target],
+        service_exec_start: '/usr/local/sbin/nomad agent -config=/etc/nomad.conf.d',
+        service_restart: 'always',
+        service_restart_sec: 5,
+        service_user: 'nomad'
       )
     end
 
@@ -125,7 +128,7 @@ describe 'resource_container_host_linux::nomad' do
 
     nomad_region_template_content = <<~CONF
       datacenter = "{{ keyOrDefault "config/services/consul/datacenter" "unknown" }}"
-      region = "{{ keyOrDefault "config/services/nomad/region" "unknown" }}"
+      region = "{{ keyOrDefault "config/services/orchestration/region" "unknown" }}"
     CONF
     it 'creates nomad region template file in the consul-template template directory' do
       expect(chef_run).to create_file('/etc/consul-template.d/templates/nomad_region.ctmpl')
@@ -145,7 +148,7 @@ describe 'resource_container_host_linux::nomad' do
         # This is the destination path on disk where the source template will render.
         # If the parent directories do not exist, Consul Template will attempt to
         # create them, unless create_dest_dirs is false.
-        destination = "/etc/nomad-conf.d/region.hcl"
+        destination = "/etc/nomad.conf.d/region.hcl"
 
         # This options tells Consul Template to create the parent directories of the
         # destination path if they do not exist. The default value is true.
@@ -210,15 +213,15 @@ describe 'resource_container_host_linux::nomad' do
           # Setting the create_from_role option causes Nomad to create tokens for tasks
           # via the provided role. This allows the role to manage what policies are
           # allowed and disallowed for use by tasks.
-          create_from_role = "{{ keyOrDefault "config/services/nomad/vault/role" "nomad-cluster" }}"
+          create_from_role = "{{ keyOrDefault "config/services/orchestration/vault/role" "nomad-cluster" }}"
 
           address = "http://{{ keyOrDefault "config/services/secrets/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "consul" }}:{{ keyOrDefault "config/services/secrets/port" "80" }}"
 
-          enabled = {{ keyOrDefault "config/services/nomad/vault/enabled" "true" }}
+          enabled = {{ keyOrDefault "config/services/orchestration/vault/enabled" "true" }}
 
           key_file = "/var/certs/vault.key"
 
-          tls_skip_verify = {{ keyOrDefault "config/services/nomad/vault/tls/skip" "true" }}
+          tls_skip_verify = {{ keyOrDefault "config/services/orchestration/vault/tls/skip" "true" }}
 
           # Embedding the token in the configuration is discouraged. Instead users
           # should set the VAULT_TOKEN environment variable when starting the Nomad
@@ -231,14 +234,14 @@ describe 'resource_container_host_linux::nomad' do
       }
 
       tls {
-          http = {{ keyOrDefault "config/services/nomad/tls/http" "false" }}
-          rpc = {{ keyOrDefault "config/services/nomad/tls/rpc" "false" }}
+          http = {{ keyOrDefault "config/services/orchestration/tls/http" "false" }}
+          rpc = {{ keyOrDefault "config/services/orchestration/tls/rpc" "false" }}
 
           ca_file = ""
           cert_file = ""
           key_file = ""
 
-          verify_server_hostname = {{ keyOrDefault "config/services/nomad/tls/verify" "false" }}
+          verify_server_hostname = {{ keyOrDefault "config/services/orchestration/tls/verify" "false" }}
       }
     CONF
     it 'creates nomad secrets template file in the consul-template template directory' do
@@ -259,7 +262,7 @@ describe 'resource_container_host_linux::nomad' do
         # This is the destination path on disk where the source template will render.
         # If the parent directories do not exist, Consul Template will attempt to
         # create them, unless create_dest_dirs is false.
-        destination = "/etc/nomad-conf.d/secrets.hcl"
+        destination = "/etc/nomad.conf.d/secrets.hcl"
 
         # This options tells Consul Template to create the parent directories of the
         # destination path if they do not exist. The default value is true.

@@ -12,7 +12,14 @@ poise_service_user nomad_user do
   group node['nomad']['service_group']
 end
 
-directory Nomad::Helpers::CONFIG_ROOT.to_s do
+# Add the nomad user to the Docker group so that Nomad can communicate with Docker
+group "docker" do
+  action :manage
+  append true
+  members [ nomad_user ]
+end
+
+directory NomadCookbook::Helpers::CONFIG_ROOT.to_s do
   owner 'root'
   group 'root'
   mode '0755'
@@ -26,7 +33,7 @@ directory nomad_data_path do
   recursive true
 end
 
-file "#{Nomad::Helpers::CONFIG_ROOT}/base.hcl" do
+file "#{NomadCookbook::Helpers::CONFIG_ROOT}/base.hcl" do
   action :create
   content <<~HCL
     client {
@@ -74,7 +81,7 @@ end
 include_recipe 'nomad::install'
 
 nomad_metrics_file = node['nomad']['metrics_file']
-file "#{Nomad::Helpers::CONFIG_ROOT}/#{nomad_metrics_file}" do
+file "#{NomadCookbook::Helpers::CONFIG_ROOT}/#{nomad_metrics_file}" do
   action :create
   content <<~CONF
     telemetry {
@@ -87,26 +94,35 @@ file "#{Nomad::Helpers::CONFIG_ROOT}/#{nomad_metrics_file}" do
 end
 
 # Install the service that will run nomad
-# Command line will be: nomad agent -config="#{Nomad::Helpers::CONFIG_ROOT}"
-args = Nomad::Helpers.hash_to_arg_string(node['nomad']['daemon_args'])
+# Command line will be: nomad agent -config="#{NomadCookbook::Helpers::CONFIG_ROOT}"
+args = node['nomad']['daemon_args'].to_args
 
 # Create the systemd service for nomad. Set it to depend on the network being up
 # so that it won't start unless the network stack is initialized and has an
 # IP address
 systemd_service 'nomad' do
   action :create
-  after %w[network-online.target]
-  description 'Nomad System Scheduler'
-  documentation 'https://nomadproject.io/docs/index.html'
+
   install do
     wanted_by %w[multi-user.target]
   end
-  requires %w[network-online.target]
   service do
-    exec_start "/usr/local/bin/nomad agent #{args}"
-    restart 'on-failure'
+    exec_reload '/bin/kill -HUP $MAINPID'
+    exec_start "/usr/local/sbin/nomad agent #{args}"
+    kill_signal 'TERM'
+    limit_nofile 'infinity'
+    limit_nproc 'infinity'
+    restart 'always'
+    restart_sec 5
+    tasks_max 'infinity'
+    user nomad_user
   end
-  user nomad_user
+  unit do
+    after %w[network-online.target]
+    description 'Nomad System Scheduler'
+    start_limit_interval_sec 0
+    requires %w[network-online.target]
+  end
 end
 
 service 'nomad' do
@@ -151,7 +167,7 @@ file "#{consul_template_template_path}/#{nomad_region_template_file}" do
   action :create
   content <<~CONF
     datacenter = "{{ keyOrDefault "config/services/consul/datacenter" "unknown" }}"
-    region = "{{ keyOrDefault "config/services/nomad/region" "unknown" }}"
+    region = "{{ keyOrDefault "config/services/orchestration/region" "unknown" }}"
   CONF
   mode '755'
 end
@@ -172,7 +188,7 @@ file "#{consul_template_config_path}/nomad_region.hcl" do
       # This is the destination path on disk where the source template will render.
       # If the parent directories do not exist, Consul Template will attempt to
       # create them, unless create_dest_dirs is false.
-      destination = "#{Nomad::Helpers::CONFIG_ROOT}/#{nomad_region_file}"
+      destination = "#{NomadCookbook::Helpers::CONFIG_ROOT}/#{nomad_region_file}"
 
       # This options tells Consul Template to create the parent directories of the
       # destination path if they do not exist. The default value is true.
@@ -239,15 +255,15 @@ file "#{consul_template_template_path}/#{nomad_secrets_template_file}" do
         # Setting the create_from_role option causes Nomad to create tokens for tasks
         # via the provided role. This allows the role to manage what policies are
         # allowed and disallowed for use by tasks.
-        create_from_role = "{{ keyOrDefault "config/services/nomad/vault/role" "nomad-cluster" }}"
+        create_from_role = "{{ keyOrDefault "config/services/orchestration/secrets/role" "nomad-cluster" }}"
 
         address = "http://{{ keyOrDefault "config/services/secrets/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "consul" }}:{{ keyOrDefault "config/services/secrets/port" "80" }}"
 
-        enabled = {{ keyOrDefault "config/services/nomad/vault/enabled" "true" }}
+        enabled = {{ keyOrDefault "config/services/orchestration/secrets/enabled" "true" }}
 
         key_file = "/var/certs/vault.key"
 
-        tls_skip_verify = {{ keyOrDefault "config/services/nomad/vault/tls/skip" "true" }}
+        tls_skip_verify = {{ keyOrDefault "config/services/orchestration/secrets/tls/skip" "true" }}
 
         # Embedding the token in the configuration is discouraged. Instead users
         # should set the VAULT_TOKEN environment variable when starting the Nomad
@@ -260,14 +276,14 @@ file "#{consul_template_template_path}/#{nomad_secrets_template_file}" do
     }
 
     tls {
-        http = {{ keyOrDefault "config/services/nomad/tls/http" "false" }}
-        rpc = {{ keyOrDefault "config/services/nomad/tls/rpc" "false" }}
+        http = {{ keyOrDefault "config/services/orchestration/tls/http" "false" }}
+        rpc = {{ keyOrDefault "config/services/orchestration/tls/rpc" "false" }}
 
         ca_file = ""
         cert_file = ""
         key_file = ""
 
-        verify_server_hostname = {{ keyOrDefault "config/services/nomad/tls/verify" "false" }}
+        verify_server_hostname = {{ keyOrDefault "config/services/orchestration/tls/verify" "false" }}
     }
   CONF
   mode '755'
@@ -289,7 +305,7 @@ file "#{consul_template_config_path}/nomad_secrets.hcl" do
       # This is the destination path on disk where the source template will render.
       # If the parent directories do not exist, Consul Template will attempt to
       # create them, unless create_dest_dirs is false.
-      destination = "#{Nomad::Helpers::CONFIG_ROOT}/#{nomad_secrets_file}"
+      destination = "#{NomadCookbook::Helpers::CONFIG_ROOT}/#{nomad_secrets_file}"
 
       # This options tells Consul Template to create the parent directories of the
       # destination path if they do not exist. The default value is true.

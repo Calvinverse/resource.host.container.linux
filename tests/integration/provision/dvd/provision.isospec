@@ -12,4 +12,3 @@
         <file src="${DirTestsIntegration}\provision\shared\*.json" target="" />
     </files>
 </iso>
-
